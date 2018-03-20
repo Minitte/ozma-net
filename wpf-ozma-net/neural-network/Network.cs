@@ -15,13 +15,27 @@ namespace wpf_ozma_net.neural_network
         private NeuronLinkLayer[] m_layers;
 
         /// <summary>
+        /// Layer responsible for input
+        /// </summary>
+        private NeuronLinkLayer m_inputLayer;
+
+        /// <summary>
+        /// Layer responsible for output
+        /// </summary>
+        private NeuronLinkLayer m_outputLayer;
+
+        /// <summary>
         /// 
         /// </summary>
-        /// <param name="numNeurons">number of neurons per layer</param>
+        /// <param name="numNeurons">number of neurons per layer, must be atleast 3 layers!</param>
         public Network(int[] numNeurons)
         {
             // create layers
             CreateLayers(numNeurons);
+
+            // input / output layer
+            m_inputLayer = m_layers[0];
+            m_outputLayer = m_layers[numNeurons.Length - 1];
 
             // connect neurons
             LinkNeurons();
