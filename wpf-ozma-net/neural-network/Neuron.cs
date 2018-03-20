@@ -9,7 +9,7 @@ namespace wpf_ozma_net.neural_network
     /// <summary>
     /// A class represneting a Neuron
     /// </summary>
-    class Neuron
+    public class Neuron
     {
         /// <summary>
         /// a value held by the neuron

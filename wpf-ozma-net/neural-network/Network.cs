@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace wpf_ozma_net.neural_network
 {
-    class Network
+    public class Network
     {
 
         /// <summary>

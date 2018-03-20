@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace wpf_ozma_net.neural_network
 {
-    class NeuronLinkLayer
+    public class NeuronLinkLayer
     {
         /// <summary>
         /// List of neurons in the layer

@@ -11,7 +11,7 @@ namespace wpf_ozma_net.util
     /// <summary>
     /// A collection of math functions that uses floats instead of the standard doubles from c# library.
     /// </summary>
-    class MathF
+    public class MathF
     {
 
         public static float E = (float)Math.E;

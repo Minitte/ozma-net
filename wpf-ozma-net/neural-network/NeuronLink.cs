@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace wpf_ozma_net.neural_network
 {
-    class NeuronLink
+    public class NeuronLink
     {
         private Neuron m_start, m_end;
         private float m_weight;
