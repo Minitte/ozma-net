@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wpf-ozma-net", "wpf-ozma-net\wpf-ozma-net.csproj", "{D2223E89-535C-44B5-AC77-89C353F5FE17}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkTest", "NetworkTest\NetworkTest.csproj", "{AB615DDD-D56E-44B1-9D09-CC6D830BCA7B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{D2223E89-535C-44B5-AC77-89C353F5FE17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2223E89-535C-44B5-AC77-89C353F5FE17}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2223E89-535C-44B5-AC77-89C353F5FE17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB615DDD-D56E-44B1-9D09-CC6D830BCA7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB615DDD-D56E-44B1-9D09-CC6D830BCA7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB615DDD-D56E-44B1-9D09-CC6D830BCA7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB615DDD-D56E-44B1-9D09-CC6D830BCA7B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
