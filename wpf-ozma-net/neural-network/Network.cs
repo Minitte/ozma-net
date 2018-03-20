@@ -112,9 +112,15 @@ namespace wpf_ozma_net.neural_network
             // for each layer
             for (int l = 0; l < numLayer; l++)
             {
-                for (int nl = 0; nl < m_layers[l].Links.Length; nl++)
+                NeuronLinkLayer leftLayer = m_layers[l];
+                NeuronLinkLayer rightLayer = m_layers[l + 1];
+
+                for (int leftN = 0; leftN < leftLayer.Neurons.Length; leftN++)
                 {
-                    m_layers[l].Links[nl].Weight = (float)rand.NextDouble();
+                    for (int rightN = 0; rightN < rightLayer.Neurons.Length; rightN++)
+                    {
+                        m_layers[l].Links[leftN, rightN].Weight = (float)rand.NextDouble();
+                    }
                 }
             }
         }
