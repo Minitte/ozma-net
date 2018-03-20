@@ -12,46 +12,52 @@ namespace wpf_ozma_net.neural_network
     class Neuron
     {
         /// <summary>
-        /// list of connected neurons
+        /// list of connected neurons going foward
         /// </summary>
-        private Neuron[] m_connected;
+        private NeuronLink[] m_fwdLink;
 
         /// <summary>
-        /// Weights for each connected neuron
+        /// list of connected neurons going backwards
         /// </summary>
-        private float[] m_weights;
+        private NeuronLink[] m_bakLink;
 
         /// <summary>
-        /// list of connected neurons
+        /// list of connected neurons going foward
         /// </summary>
-        public Neuron[] Connected
+        public NeuronLink[] FwdLink
         {
             get
             {
-                return m_connected;
+                return m_fwdLink;
+            }
+
+            set
+            {
+                m_fwdLink = value;
             }
         }
 
         /// <summary>
-        /// Weights for each connected neuron
+        /// list of connected neurons going backwards
         /// </summary>
-        public float[] Weights
+        public NeuronLink[] BakLink
         {
             get
             {
-                return m_weights;
+                return m_bakLink;
+            }
+
+            set
+            {
+                m_bakLink = value;
             }
         }
 
         /// <summary>
-        /// Constructor for a neuron
+        /// Default constructor
         /// </summary>
-        /// <param name="connected"></param>
-        /// <param name="weights"></param>
-        public Neuron(Neuron[] connected, float[] weights)
+        public Neuron()
         {
-            this.m_connected = connected;
-            this.m_weights = weights;
         }
     }
 }
