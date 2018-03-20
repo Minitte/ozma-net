@@ -12,7 +12,7 @@ namespace wpf_ozma_net.neural_network
         /// <summary>
         /// List of layers in the network
         /// </summary>
-        private NeuronLayer[] m_layers;
+        private NeuronLinkLayer[] m_layers;
 
         /// <summary>
         /// 
@@ -24,7 +24,10 @@ namespace wpf_ozma_net.neural_network
             CreateLayers(numNeurons);
 
             // connect neurons
-            SetupNeurons(10);
+            LinkNeurons();
+
+            // randomize weights
+            RandomizeWeights(10);
         }
 
         /// <summary>
@@ -37,7 +40,7 @@ namespace wpf_ozma_net.neural_network
             // number of layers
             int numLayer = numNeurons.Length;
 
-            m_layers = new NeuronLayer[numLayer];
+            m_layers = new NeuronLinkLayer[numLayer];
 
             // create layers
             for (int l = 0; l < numLayer; l++) // l represents layer index
@@ -50,7 +53,7 @@ namespace wpf_ozma_net.neural_network
                     neurons[n] = new Neuron();
                 }
 
-                m_layers[l] = new NeuronLayer(neurons);
+                m_layers[l] = new NeuronLinkLayer(neurons);
             }
         }
 
@@ -66,22 +69,16 @@ namespace wpf_ozma_net.neural_network
             // connect layers
             for (int l = 0; l < numLayer - 1; l++)
             {
-                // sets up each foward link
-                for (int n = 0; n < m_layers[l].Neurons.Length; n++)
-                {
-                    // connecting current layer with next layer
-                    m_layers[l].Neurons[n].FwdLink = new NeuronLink[m_layers[l + 1].Neurons.Length];
-                }
-            }
+                int numLinks = m_layers[l].Neurons.Length * m_layers[l + 1].Neurons.Length;
 
-            // backwards link
-            for (int l = 1; l < numLayer; l++)
-            {
-                // sets up each backwards link
-                for (int n = 0; n < m_layers[l].Neurons.Length; n++)
+                m_layers[l].Links = new NeuronLink[numLinks];
+
+                for (int nl = 0; nl < numLinks; nl++)
                 {
-                    // connecting current layer with prev layer
-                    m_layers[l].Neurons[n].BakLink = m_layers[l - 1].Neurons;
+                    int leftIndex = nl / m_layers[l].Neurons.Length;
+                    int rightIndex = nl % m_layers[l + 1].Neurons.Length;
+
+                    m_layers[l].Links[nl] = new NeuronLink(m_layers[l].Neurons[leftIndex], m_layers[l + 1].Neurons[rightIndex], 0);
                 }
             }
         }
@@ -90,7 +87,7 @@ namespace wpf_ozma_net.neural_network
         /// randomizes the weights 
         /// </summary>
         /// <param name="randSeed"></param>
-        private void SetupWeights(int randSeed)
+        private void RandomizeWeights(int randSeed)
         {
             // random number generator
             Random rand = new Random(randSeed);
@@ -101,18 +98,11 @@ namespace wpf_ozma_net.neural_network
             // for each layer
             for (int l = 0; l < numLayer; l++)
             {
-                // sets up each neuron in the layer
-                for (int n = 0; n < m_layers[l].Neurons.Length; n++)
+                for (int nl = 0; nl < m_layers[l].Links.Length; nl++)
                 {
-                    // setup weights
-                    m_layers[l].Neurons[n].Weights = new float[m_layers[l + 1].Neurons.Length];
-
-                    // random weights
-                    for (int w = 0; w < m_layers[l + 1].Neurons.Length; w++)
-                    {
-                        m_layers[l].Neurons[n].Weights[w] = (float)rand.NextDouble();
-                    }
+                    m_layers[l].Links[nl].Weight = (float)rand.NextDouble();
                 }
-             }
+            }
+        }
     }
 }
