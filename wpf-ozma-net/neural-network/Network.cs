@@ -25,6 +25,17 @@ namespace wpf_ozma_net.neural_network
         private NeuronLinkLayer m_outputLayer;
 
         /// <summary>
+        /// List of layers in the network
+        /// </summary>
+        public NeuronLinkLayer[] Layers
+        {
+            get
+            {
+                return m_layers;
+            }
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="numNeurons">number of neurons per layer, must be atleast 3 layers!</param>
