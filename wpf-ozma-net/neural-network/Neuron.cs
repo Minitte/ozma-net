@@ -12,44 +12,20 @@ namespace wpf_ozma_net.neural_network
     class Neuron
     {
         /// <summary>
-        /// list of connected neurons going foward
+        /// a value held by the neuron
         /// </summary>
-        private NeuronLink[] m_fwdLink;
+        private float m_value;
 
-        /// <summary>
-        /// list of connected neurons going backwards
-        /// </summary>
-        private NeuronLink[] m_bakLink;
-
-        /// <summary>
-        /// list of connected neurons going foward
-        /// </summary>
-        public NeuronLink[] FwdLink
+        public float Value
         {
             get
             {
-                return m_fwdLink;
+                return m_value;
             }
 
             set
             {
-                m_fwdLink = value;
-            }
-        }
-
-        /// <summary>
-        /// list of connected neurons going backwards
-        /// </summary>
-        public NeuronLink[] BakLink
-        {
-            get
-            {
-                return m_bakLink;
-            }
-
-            set
-            {
-                m_bakLink = value;
+                m_value = value;
             }
         }
 
