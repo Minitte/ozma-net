@@ -50,7 +50,7 @@ namespace wpf_ozma_net.neural_network
             }
         }
 
-        public NeuronLayer(Neuron[] neurons)
+        public NeuronLinkLayer(Neuron[] neurons)
         {
             this.m_neurons = neurons;
         }
