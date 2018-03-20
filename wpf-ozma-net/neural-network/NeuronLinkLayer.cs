@@ -16,7 +16,7 @@ namespace wpf_ozma_net.neural_network
         /// <summary>
         /// List of (foward) links 
         /// </summary>
-        private NeuronLink[] m_links;
+        private NeuronLink[,] m_links;
 
         /// <summary>
         /// List of neurons in the layer
@@ -37,7 +37,7 @@ namespace wpf_ozma_net.neural_network
         /// <summary>
         /// List of (foward) links 
         /// </summary>
-        public NeuronLink[] Links
+        public NeuronLink[,] Links
         {
             get
             {
@@ -53,6 +53,17 @@ namespace wpf_ozma_net.neural_network
         public NeuronLinkLayer(Neuron[] neurons)
         {
             this.m_neurons = neurons;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="curIndex">the index of a neuron from the right side layer</param>
+        /// <param name="backIndex">index of the desired neuron from this layer</param>
+        /// <returns></returns>
+        public NeuronLink BackwardGetLink(int curIndex, int backIndex)
+        {
+            return null;
         }
     }
 }

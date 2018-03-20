@@ -83,16 +83,16 @@ namespace wpf_ozma_net.neural_network
             // connect layers
             for (int l = 0; l < numLayer - 1; l++)
             {
-                int numLinks = m_layers[l].Neurons.Length * m_layers[l + 1].Neurons.Length;
+                NeuronLinkLayer leftLayer = m_layers[l];
+                NeuronLinkLayer rightLayer = m_layers[l + 1];
+                m_layers[l].Links = new NeuronLink[leftLayer.Neurons.Length, rightLayer.Neurons.Length];
 
-                m_layers[l].Links = new NeuronLink[numLinks];
-
-                for (int nl = 0; nl < numLinks; nl++)
+                for (int leftN = 0; leftN < leftLayer.Neurons.Length; leftN++)
                 {
-                    int leftIndex = nl / m_layers[l].Neurons.Length;
-                    int rightIndex = nl % m_layers[l + 1].Neurons.Length;
-
-                    m_layers[l].Links[nl] = new NeuronLink(m_layers[l].Neurons[leftIndex], m_layers[l + 1].Neurons[rightIndex], 0);
+                    for (int rightN = 0; rightN < rightLayer.Neurons.Length; rightN++)
+                    {
+                        m_layers[l].Links[leftN, rightN] = new NeuronLink(leftLayer.Neurons[leftN], rightLayer.Neurons[rightN], 0);
+                    }
                 }
             }
         }
