@@ -55,9 +55,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\wpf-ozma-net\wpf-ozma-net.csproj">
-      <Project>{d2223e89-535c-44b5-ac77-89c353f5fe17}</Project>
-      <Name>wpf-ozma-net</Name>
+    <ProjectReference Include="..\ozma-net\ozmanet.csproj">
+      <Project>{2a5e8921-05f1-4312-a68a-c68988e8d487}</Project>
+      <Name>ozmanet</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

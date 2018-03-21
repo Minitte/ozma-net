@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using wpf_ozma_net.neural_network;
+using ozmanet.neural_network;
 
 namespace NetworkTest
 {
