@@ -119,7 +119,7 @@ namespace ozmanet.neural_network
             int numLayer = m_layers.Length;
 
             // for each layer
-            for (int l = 0; l < numLayer; l++)
+            for (int l = 0; l < numLayer - 1; l++)
             {
                 NeuronLinkLayer leftLayer = m_layers[l];
                 NeuronLinkLayer rightLayer = m_layers[l + 1];
