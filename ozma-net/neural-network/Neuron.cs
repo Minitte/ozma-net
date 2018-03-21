@@ -10,20 +10,38 @@ namespace ozmanet.neural_network
     public class Neuron
     {
         /// <summary>
-        /// a value held by the neuron
+        /// an incoming value held by the neuron
         /// </summary>
-        private float m_value;
+        private float net_value;
 
-        public float Value
+        /// <summary>
+        /// an outgoing value held by the neuron
+        /// </summary>
+        private float out_value;
+
+        public float Net
         {
             get
             {
-                return m_value;
+                return net_value;
             }
 
             set
             {
-                m_value = value;
+                net_value = value;
+            }
+        }
+
+        public float Out
+        {
+            get
+            {
+                return out_value;
+            }
+
+            set
+            {
+                out_value = value;
             }
         }
 

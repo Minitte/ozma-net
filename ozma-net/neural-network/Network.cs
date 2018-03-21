@@ -53,6 +53,21 @@ namespace ozmanet.neural_network
             RandomizeWeights(10);
         }
 
+        /**
+         * Passes the input values forward through the network.
+         */
+        public void FeedForward(float[] inputs)
+        {
+            // Apply the input values
+            for (int i = 0; i < inputs.Length; i++)
+            {
+                m_inputLayer.Neurons[i].Out = inputs[i];
+            }
+
+
+
+        }
+
         /// <summary>
         /// Creates layers based on the given values
         /// None of the neurons are linked to each other
