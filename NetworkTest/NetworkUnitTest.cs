@@ -10,6 +10,30 @@ namespace NetworkTest
     {
 
         [TestMethod]
+        public void TestLinkReferences()
+        {
+            int[] layerSettings = { 1, 3, 1 };
+            Network network = new Network(layerSettings);
+            NeuronLinkLayer[] layers = network.Layers;
+
+            // all links
+            for (int l = 0; l < layers.Length - 1; l++)
+            {
+                NeuronLinkLayer left = layers[l];
+                NeuronLinkLayer right = layers[l + 1];
+
+                for (int ln = 0; ln < left.Neurons.Length; ln++)
+                {
+                    for (int rn = 0; rn < right.Neurons.Length; rn++)
+                    {
+                        Assert.AreEqual(left.Links[ln, rn].Start, left.Neurons[ln]);
+                        Assert.AreEqual(left.Links[ln, rn].End, right.Neurons[rn]);
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
         public void TestNetworkSetup()
         {
             int[] layerSettings = { 1, 4, 1 };
