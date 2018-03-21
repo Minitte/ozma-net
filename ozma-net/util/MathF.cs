@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using System.Runtime.CompilerServices;
 
-namespace wpf_ozma_net.util
+namespace ozmanet.util
 {
     /// <summary>
     /// A collection of math functions that uses floats instead of the standard doubles from c# library.
