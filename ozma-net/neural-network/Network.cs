@@ -71,10 +71,14 @@ namespace ozmanet.neural_network
                 m_inputLayer.Neurons[i].Out = inputs[i];
             }
 
+            // Input layer to hidden layer
+            m_inputLayer.UpdateNeuronNets();
+
             // Feed forward
-            foreach (NeuronLinkLayer link in m_layers)
+            for (int i = 1; i < m_layers.Length - 1; i++)
             {
-                link.UpdateNeurons();
+                m_layers[i].UpdateNeuronOuts();
+                m_layers[i].UpdateNeuronNets();
             }
         }
 

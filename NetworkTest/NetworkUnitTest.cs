@@ -48,5 +48,49 @@ namespace NetworkTest
                 Assert.AreEqual(layers[i].Neurons.Length, layerSettings[i], String.Format("layer {0} has {1} neurons instead of {2}!", i, layers[i].Neurons.Length, layerSettings[i]));
             }
         }
+
+        [TestMethod]
+        public void TestSigmoidFunction()
+        {
+            // Test for sigmoid of zero
+            float zero = 0.0f;
+            float sigmoidZero = ozmanet.util.MathF.Sigmoid(zero);
+
+            Assert.AreEqual(0.50f, sigmoidZero, 0.01f);
+
+            // Test for sigmoid of one
+            float one = 1.0f;
+            float sigmoidOne = ozmanet.util.MathF.Sigmoid(one);
+
+            Assert.AreEqual(0.73f, sigmoidOne, 0.01f);
+        }
+
+        [TestMethod]
+        public void TestFeedForward()
+        {
+            int[] layerSettings = { 1, 2, 1 };
+            Network network = new Network(layerSettings);
+
+            NeuronLinkLayer[] layers = network.Layers;
+
+            float inputToH1Weight = layers[0].Links[0, 0].Weight;
+            float inputToH2Weight = layers[0].Links[0, 1].Weight;
+            float[] inputValues = new float[] { 1.5f };
+
+            network.FeedForward(inputValues);
+
+            // Check hidden layer net values
+            Assert.AreEqual(inputToH1Weight * inputValues[0], layers[1].Neurons[0].Net);
+            Assert.AreEqual(inputToH2Weight * inputValues[0], layers[1].Neurons[1].Net);
+
+            float H1ToOutputWeight = layers[1].Links[0, 0].Weight;
+            float H2ToOutputWeight = layers[1].Links[1, 0].Weight;
+
+            float H1Out = layers[1].Neurons[0].Out;
+            float H2Out = layers[1].Neurons[1].Out;
+
+            // Check output layer net value
+            Assert.AreEqual(H1Out * H1ToOutputWeight + H2Out * H2ToOutputWeight, layers[2].Neurons[0].Net, 0.01f);
+        }
     }
 }
