@@ -64,5 +64,16 @@ namespace ozmanet.neural_network
             return m_links[backIndex, curIndex];
         }
 
+        public void UpdateValues()
+        {
+            for (int i = 0; i < m_links.GetLength(0); i++)
+            {
+                for (int j = 0; j < m_links.GetLength(1); j++)
+                {
+
+                }
+            }
+        }
+
     }
 }
