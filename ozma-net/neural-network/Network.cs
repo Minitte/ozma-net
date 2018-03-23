@@ -58,14 +58,24 @@ namespace ozmanet.neural_network
          */
         public void FeedForward(float[] inputs)
         {
+            // Number of input values should be equal to number of input neurons
+            if (inputs.Length != m_inputLayer.Neurons.Length)
+            {
+                Console.WriteLine("Invalid input");
+                return;
+            }
+
             // Apply the input values
             for (int i = 0; i < inputs.Length; i++)
             {
                 m_inputLayer.Neurons[i].Out = inputs[i];
             }
 
-
-
+            // Feed forward
+            foreach (NeuronLinkLayer link in m_layers)
+            {
+                link.UpdateNeurons();
+            }
         }
 
         /// <summary>

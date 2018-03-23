@@ -64,13 +64,17 @@ namespace ozmanet.neural_network
             return m_links[backIndex, curIndex];
         }
 
-        public void UpdateValues()
+        /**
+         * Updates the neuron values for all the links.
+         */
+        public void UpdateNeurons()
         {
             for (int i = 0; i < m_links.GetLength(0); i++)
             {
                 for (int j = 0; j < m_links.GetLength(1); j++)
                 {
-
+                    float outValue = m_links[i, j].Start.UpdateOut(); // Update the out value
+                    m_links[i, j].End.Net += outValue; // Add to net value of end neuron
                 }
             }
         }

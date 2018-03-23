@@ -51,5 +51,15 @@ namespace ozmanet.neural_network
         public Neuron()
         {
         }
+
+        /**
+         * Updates the out value of this neuron.
+         * @return the out value
+         */
+        public float UpdateOut()
+        {
+            out_value = util.MathF.Sigmoid(net_value);
+            return out_value;
+        }
     }
 }
