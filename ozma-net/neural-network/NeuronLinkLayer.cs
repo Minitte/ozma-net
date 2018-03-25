@@ -64,5 +64,33 @@ namespace ozmanet.neural_network
             return m_links[backIndex, curIndex];
         }
 
+        /**
+         * Updates the start neuron out values for all the links.
+         */
+        public void UpdateNeuronOuts()
+        {
+            for (int i = 0; i < m_links.GetLength(0); i++)
+            {
+                for (int j = 0; j < m_links.GetLength(1); j++)
+                {
+                    m_links[i, j].Start.UpdateOut();
+                }
+            }
+        }
+
+        /**
+         * Updates the end neuron net values for all the links.
+         */
+        public void UpdateNeuronNets()
+        {
+            for (int i = 0; i < m_links.GetLength(0); i++)
+            {
+                for (int j = 0; j < m_links.GetLength(1); j++)
+                {
+                    m_links[i, j].End.Net += m_links[i, j].Start.Out * m_links[i, j].Weight;
+                }
+            }
+        }
+
     }
 }
