@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ozmanet.neural_network
@@ -81,6 +82,13 @@ namespace ozmanet.neural_network
                 m_layers[i].UpdateNeuronOuts();
                 m_layers[i].UpdateNeuronNets();
             }
+
+            // Update output values
+            for (int i = 0; i < m_outputLayer.Neurons.Length; i++)
+            {
+                m_outputLayer.Neurons[i].UpdateOut();
+            }
+
         }
 
         /**
@@ -95,7 +103,8 @@ namespace ozmanet.neural_network
 
             for (int i = 0; i < expected.Length; i++)
             {
-                error[i] = 1 / 2 * (float)Math.Pow((expected[i] - m_outputLayer.Neurons[i].Out), 2);
+                error[i] = 1f / 2 * (float)Math.Pow((expected[i] - m_outputLayer.Neurons[i].Out), 2);
+                Console.WriteLine("Expected: " + expected[i] + " Actual: " + Layers[2].Neurons[i].Out);
             }
 
             return error;
@@ -103,17 +112,16 @@ namespace ozmanet.neural_network
 
         /**
          * Calculates the partial derivative of the error and the output of each output neuron.
-         * Uses the formula: -2 * error
          * 
          * @return the partial derivatives as a float array 
          */
-        private float[] DerivativeErrorToOutput(float[] error)
+        private float[] DerivativeErrorToOutput(float[] expected)
         {
-            float[] errorToOutput = new float[error.Length];
+            float[] errorToOutput = new float[expected.Length];
 
-            for (int i = 0; i < error.Length; i++)
+            for (int i = 0; i < expected.Length; i++)
             {
-                errorToOutput[i] = -2 * error[i];
+                errorToOutput[i] = -(expected[i] - m_outputLayer.Neurons[i].Out);
             }
 
             return errorToOutput;
@@ -158,6 +166,10 @@ namespace ozmanet.neural_network
             return netToWeight;
         }
 
+        /**
+         * Performs backpropagation on the network.
+         * Currently assumes that all neurons between two layers are fully connected.
+         */
         public void Backpropagate(float[] expected)
         {
             // Number of input values should be equal to number of input neurons
@@ -169,23 +181,74 @@ namespace ozmanet.neural_network
 
             float[] error = CalculateError(expected);
 
-            float[] errorToOutput = DerivativeErrorToOutput(error);
+
+            // Output to hidden backpropagation
+
+            float[] errorToOut = DerivativeErrorToOutput(expected);
 
             float[] outputToNet = DerivativeOutToNet(m_outputLayer);
 
             float[,] netToWeight = DerivativeOutputNetToWeights();
 
-            float[,] OutputToHiddenChange = new float[expected.Length, m_layers[1].Neurons.Length];
+            float[,] outputToHiddenChange = new float[expected.Length, m_layers[1].Neurons.Length];
 
-            // Get and apply all changes to hidden layer for now
             for (int i = 0; i < expected.Length; i++)
             {
                 for (int j = 0; j < m_layers[1].Neurons.Length; j++)
                 {
-                    OutputToHiddenChange[i, j] = errorToOutput[i] * outputToNet[i] * netToWeight[i, j];
+                    outputToHiddenChange[i, j] = errorToOut[i] * outputToNet[i] * netToWeight[i, j];
                 }
             }
 
+            // Hidden to input backpropagation
+            
+            float[] errorToHiddenOut = new float[m_layers[1].Neurons.Length];
+
+            for (int i = 0; i < expected.Length; i++)
+            {
+                float sum = 0.0f;
+                for (int j = 0; j < m_layers[1].Neurons.Length; j++)
+                {
+                    sum += outputToHiddenChange[j, i];
+                }
+                errorToHiddenOut[i] = sum;
+            }
+
+            float[] hiddenOutToNet = new float[m_layers[1].Neurons.Length];
+            
+            for (int i = 0; i < m_layers[1].Neurons.Length; i++)
+            {
+                hiddenOutToNet[i] = util.MathF.SigmoidPrimes(m_layers[1].Neurons[i].Net);
+            }
+
+            // Hidden layer to input layer
+            float[,] hiddenToInputChange = new float[m_layers[1].Neurons.Length, m_inputLayer.Neurons.Length];
+
+            for (int i = 0; i < m_layers[1].Neurons.Length; i++)
+            {
+                for (int j = 0; j < m_inputLayer.Neurons.Length; j++)
+                {
+                    hiddenToInputChange[i, j] = errorToHiddenOut[i] * hiddenOutToNet[i] * m_inputLayer.Neurons[j].Out;
+                }
+            }
+
+            // Update hidden layer
+            for (int i = 0; i < outputToHiddenChange.GetLength(0); i++)
+            {
+                for (int j = 0; j < outputToHiddenChange.GetLength(1); j++)
+                {
+                    m_layers[1].Links[i, j].Weight -= learningRate * outputToHiddenChange[j, i];
+                }
+            }
+
+            // Update input layer
+            for (int i = 0; i < hiddenToInputChange.GetLength(0); i++)
+            {
+                for (int j = 0; j < hiddenToInputChange.GetLength(1); j++)
+                {
+                    m_inputLayer.Links[i, j].Weight -= learningRate * hiddenToInputChange[j, i];
+                }
+            }
         }
 
         /// <summary>

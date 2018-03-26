@@ -92,5 +92,31 @@ namespace NetworkTest
             // Check output layer net value
             Assert.AreEqual(H1Out * H1ToOutputWeight + H2Out * H2ToOutputWeight, layers[2].Neurons[0].Net, 0.01f);
         }
+
+        [TestMethod]
+        public void TestBackpropagation()
+        {
+            int[] layerSettings = { 2, 2, 2 };
+            Network network = new Network(layerSettings);
+
+            network.Layers[0].Links[0, 0].Weight = 0.15f;
+            network.Layers[0].Links[0, 1].Weight = 0.25f;
+            network.Layers[0].Links[1, 0].Weight = 0.20f;
+            network.Layers[0].Links[1, 1].Weight = 0.30f;
+
+            network.Layers[1].Links[0, 0].Weight = 0.40f;
+            network.Layers[1].Links[0, 1].Weight = 0.50f;
+            network.Layers[1].Links[1, 0].Weight = 0.45f;
+            network.Layers[1].Links[1, 1].Weight = 0.55f;
+
+            float[] input = new float[] { 0.05f, 0.10f };
+            float[] expected = new float[] { 0.01f, 0.99f };
+
+            for (int i = 0; i < 10000; i++)
+            {
+                network.FeedForward(input);
+                network.Backpropagate(expected);
+            }
+        }
     }
 }
