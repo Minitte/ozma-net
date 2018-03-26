@@ -22,8 +22,8 @@
             <Image Name="NetworkImage"></Image>
         </Border>
         
-        <Button Content="Clear" HorizontalAlignment="Left" Height="27" Margin="295,10,0,0" VerticalAlignment="Top" Width="140" Click="BtnClearEvent"/>
-        <Button Content="Undo" HorizontalAlignment="Left" Height="27" Margin="295,42,0,0" VerticalAlignment="Top" Width="140" Click="BtnUndoEvent"/>
-        <Button Content="Redo" HorizontalAlignment="Left" Height="27" Margin="295,74,0,0" VerticalAlignment="Top" Width="140" Click="BtnRedoEvent"/>
+        <Button Content="Clear" HorizontalAlignment="Left" Height="27" Margin="295,25,0,0" VerticalAlignment="Top" Width="140" Click="BtnClearEvent"/>
+        <Button Content="Undo" HorizontalAlignment="Left" Height="27" Margin="295,57,0,0" VerticalAlignment="Top" Width="140" Click="BtnUndoEvent"/>
+        <Button Content="Redo" HorizontalAlignment="Left" Height="27" Margin="295,89,0,0" VerticalAlignment="Top" Width="140" Click="BtnRedoEvent"/>
     </Grid>
 </Window>
