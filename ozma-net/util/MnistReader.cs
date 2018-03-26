@@ -12,7 +12,51 @@ namespace ozmanet.util
         private BinaryReader m_imgReader;
         private int m_imgWidth, m_imgHeight;
         private int m_numLabels, m_numImgs; // these should be the same
-        private int m_readIndex = 0;
+        private int m_readIndex;
+
+        /// <summary>
+        /// width of each img in the data
+        /// </summary>
+        public int ImgWidth
+        {
+            get
+            {
+                return m_imgWidth;
+            }
+        }
+
+        /// <summary>
+        /// height of each img in the data
+        /// </summary>
+        public int ImgHeight
+        {
+            get
+            {
+                return m_imgHeight;
+            }
+        }
+
+        /// <summary>
+        /// number of labels, this should be equal to number of images
+        /// </summary>
+        public int NumLabels
+        {
+            get
+            {
+                return m_numLabels;
+            }
+        }
+
+        /// <summary>
+        /// numbers of images, this should be equal to number of labels
+        /// </summary>
+        public int NumImgs
+        {
+            get
+            {
+                return m_numImgs;
+            }
+        }
 
         /// <summary>
         /// Constructor for a mnist data reader
@@ -23,6 +67,10 @@ namespace ozmanet.util
         {
             m_labelReader = new BinaryReader(new FileStream(labelPath, FileMode.Open));
             m_imgReader = new BinaryReader(new FileStream(imgPath, FileMode.Open));
+
+            m_readIndex = 0;
+
+            ReadHeader();
         }
 
         /// <summary>
@@ -32,13 +80,13 @@ namespace ozmanet.util
         {
             // header for labels
             m_labelReader.ReadInt32(); // discard first
-            m_numLabels = m_labelReader.ReadInt32();
+            m_numLabels = ReadBigInt32(m_labelReader);
 
             // header for imgs
             m_imgReader.ReadInt32(); // discard first
-            m_numImgs = m_imgReader.ReadInt32();
-            m_imgWidth = m_imgReader.ReadInt32();
-            m_imgHeight = m_imgReader.ReadInt32();
+            m_numImgs = ReadBigInt32(m_imgReader);
+            m_imgWidth = ReadBigInt32(m_imgReader);
+            m_imgHeight = ReadBigInt32(m_imgReader);
         }
 
         /// <summary>
@@ -71,14 +119,30 @@ namespace ozmanet.util
         public CharacterImage[] ReadRest()
         {
             CharacterImage[] data = new CharacterImage[m_numLabels - m_readIndex];
+            int i = 0;
 
             // read all of the remaining data
             while (HasNext())
             {
-                data[m_readIndex] = ReadNext();
+                data[i++] = ReadNext();
             }
 
             return data;
+        }
+
+        /// <summary>
+        /// Reads all of the data from the start
+        /// </summary>
+        /// <returns></returns>
+        public CharacterImage[] ReadAllFromStart()
+        {
+            m_labelReader.BaseStream.Seek(0, SeekOrigin.Begin);
+            m_imgReader.BaseStream.Seek(0, SeekOrigin.Begin);
+
+            ReadHeader(); // forwards the stream past the header
+            m_readIndex = 0;
+
+            return ReadRest();
         }
 
         /// <summary>
@@ -98,6 +162,19 @@ namespace ozmanet.util
             m_imgReader.Dispose();
             m_labelReader.Dispose();
         }
-        
+
+        /// <summary>
+        /// Reads the next 4 byte and converts to Big Endian format
+        /// </summary>
+        /// <param name="br"></param>
+        /// <returns></returns>
+        private int ReadBigInt32(BinaryReader br)
+        {
+            var bytes = br.ReadBytes(sizeof(Int32));
+            if (BitConverter.IsLittleEndian)
+                Array.Reverse(bytes);
+            return BitConverter.ToInt32(bytes, 0);
+        }
+
     }
 }
