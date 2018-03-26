@@ -99,6 +99,40 @@ namespace wpf_ozma_net
         }
 
         /// <summary>
+        /// Converts the bitmapimage into a 2d byte array that is more suitable for the network's input
+        /// </summary>
+        /// <param name="img"></param>
+        /// <returns></returns>
+        private byte[,] ConvertToNetworkInput(TransformedBitmap img)
+        {
+            int w = (int)(img.Width + 0.5);
+            int h = (int)(img.Height + 0.5);
+            byte[,] data = new byte[w, h];
+            int[] pxBuffer = new int[w * h];
+
+            // copy argb pixels to buffer
+            img.CopyPixels(pxBuffer, w * 4, 0);
+
+            // for all pixels in buffer
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    // extract rgb values
+                    int px = pxBuffer[(y * w) + x];
+                    int r = px & 0x00ff0000;
+                    int g = px & 0x0000ff00;
+                    int b = px & 0x000000ff;
+
+                    // calculate y value
+                    data[x, y] = (byte)((0.299 * r) + (0.567 * g) + (0.114 * b));
+                }
+            }
+
+            return data;
+        }
+
+        /// <summary>
         /// Undo last action
         /// </summary>
         private void UndoStroke()
