@@ -80,6 +80,9 @@ namespace wpf_ozma_net
             }
         }
 
+        /// <summary>
+        /// Updates the network image view
+        /// </summary>
         private void UpdateNetworkImage()
         {
 
@@ -95,33 +98,9 @@ namespace wpf_ozma_net
             NetworkImage.Source = res;
         }
 
-        private void StrokeDrawnEvent(object sender, InkCanvasStrokeCollectedEventArgs e)
-        {
-            List<Stroke> strokeList = new List<Stroke>();
-            strokeList.Add(e.Stroke);
-            m_undoStack.Push(new StrokeAction(strokeList, true));
-
-            byte[] data = DrawingToBitmap();
-
-            m_redoStack.Clear();
-
-            UpdateNetworkImage();
-        }
-
-        private void BtnClearEvent(object sender, RoutedEventArgs e)
-        {
-            List<Stroke> strokeList = new List<Stroke>();
-
-            foreach (Stroke s in DrawingCanvas.Strokes)
-            {
-                strokeList.Add(s);
-            }
-
-            m_undoStack.Push(new StrokeAction(strokeList, false));
-
-            DrawingCanvas.Strokes.Clear();
-        }
-
+        /// <summary>
+        /// Undo last action
+        /// </summary>
         private void UndoStroke()
         {
             if (m_undoStack.Count() != 0)
@@ -147,6 +126,9 @@ namespace wpf_ozma_net
             }
         }
 
+        /// <summary>
+        /// Redo undone actions
+        /// </summary>
         private void RedoStroke()
         {
             if (m_redoStack.Count() != 0)
@@ -173,6 +155,9 @@ namespace wpf_ozma_net
             }
         }
 
+        /// <summary>
+        /// Class that holds information for proper undo/redo 
+        /// </summary>
         public class StrokeAction
         {
             public List<Stroke> StrokeList;
@@ -185,14 +170,61 @@ namespace wpf_ozma_net
             }
         }
 
+        /// <summary>
+        /// Undo button event that triggers a undo
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnUndoEvent(object sender, RoutedEventArgs e)
         {
             UndoStroke();
         }
 
+        /// <summary>
+        /// redo button event that triggers a redo
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnRedoEvent(object sender, RoutedEventArgs e)
         {
             RedoStroke();
+        }
+
+        /// <summary>
+        /// Event handler for when the user draws
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void StrokeDrawnEvent(object sender, InkCanvasStrokeCollectedEventArgs e)
+        {
+            List<Stroke> strokeList = new List<Stroke>();
+            strokeList.Add(e.Stroke);
+            m_undoStack.Push(new StrokeAction(strokeList, true));
+
+            byte[] data = DrawingToBitmap();
+
+            m_redoStack.Clear();
+
+            UpdateNetworkImage();
+        }
+
+        /// <summary>
+        /// Button click event for clearing the drawing canvas
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnClearEvent(object sender, RoutedEventArgs e)
+        {
+            List<Stroke> strokeList = new List<Stroke>();
+
+            foreach (Stroke s in DrawingCanvas.Strokes)
+            {
+                strokeList.Add(s);
+            }
+
+            m_undoStack.Push(new StrokeAction(strokeList, false));
+
+            DrawingCanvas.Strokes.Clear();
         }
     }
 }
