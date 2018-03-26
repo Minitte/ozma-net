@@ -107,7 +107,7 @@ namespace ozmanet.neural_network
          * 
          * @return the partial derivatives as a float array 
          */
-        private float[] CalculateErrorToOutput(float[] error)
+        private float[] DerivativeErrorToOutput(float[] error)
         {
             float[] errorToOutput = new float[error.Length];
 
@@ -125,16 +125,16 @@ namespace ozmanet.neural_network
          * 
          * @return the partial derivatives as a float array
          */
-        private float[] CalculateOutputToNet(int length)
+        private float[] DerivativeOutToNet(NeuronLinkLayer layer)
         {
-            float[] outputToNet = new float[length];
+            float[] outToNet = new float[layer.Neurons.Length];
 
-            for (int i = 0; i < length; i++)
+            for (int i = 0; i < layer.Neurons.Length; i++)
             {
-                outputToNet[i] = m_outputLayer.Neurons[i].Out * (1f - m_outputLayer.Neurons[i].Out);
+                outToNet[i] = layer.Neurons[i].Out * (1f - layer.Neurons[i].Out);
             }
 
-            return outputToNet;
+            return outToNet;
         }
 
         /**
@@ -142,12 +142,12 @@ namespace ozmanet.neural_network
          * 
          * @return the partial derivatives as a 2d float array
          */
-        private float[,] CalculateNetToWeight(int length)
+        private float[,] DerivativeOutputNetToWeights()
         {
             //Hardcoded 1 to get hidden layer for now
-            float[,] netToWeight = new float[length, m_layers[1].Neurons.Length];
+            float[,] netToWeight = new float[m_outputLayer.Neurons.Length, m_layers[1].Neurons.Length];
 
-            for (int i = 0; i < length; i++)
+            for (int i = 0; i < m_outputLayer.Neurons.Length; i++)
             {
                 for (int j = 0; j < m_layers[1].Neurons.Length; j++)
                 {
@@ -169,22 +169,22 @@ namespace ozmanet.neural_network
 
             float[] error = CalculateError(expected);
 
-            float[] errorToOutput = CalculateErrorToOutput(error);
+            float[] errorToOutput = DerivativeErrorToOutput(error);
 
-            float[] outputToNet = CalculateOutputToNet(m_outputLayer.Neurons.Length);
+            float[] outputToNet = DerivativeOutToNet(m_outputLayer);
 
-            float[,] netToWeight = CalculateNetToWeight(m_outputLayer.Neurons.Length);
+            float[,] netToWeight = DerivativeOutputNetToWeights();
 
-            float[,] totalChange = new float[expected.Length, m_layers[1].Neurons.Length];
+            float[,] OutputToHiddenChange = new float[expected.Length, m_layers[1].Neurons.Length];
 
+            // Get and apply all changes to hidden layer for now
             for (int i = 0; i < expected.Length; i++)
             {
                 for (int j = 0; j < m_layers[1].Neurons.Length; j++)
                 {
-                    totalChange[i, j] = errorToOutput[i] * outputToNet[i] * netToWeight[i, j];
+                    OutputToHiddenChange[i, j] = errorToOutput[i] * outputToNet[i] * netToWeight[i, j];
                 }
             }
-
 
         }
 
