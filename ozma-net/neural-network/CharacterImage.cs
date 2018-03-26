@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ozmanet.neural_network
 {
-    class CharacterImage
+    public class CharacterImage
     {
         private byte[,] m_data;
         private char m_value;
