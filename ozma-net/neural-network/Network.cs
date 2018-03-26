@@ -6,6 +6,7 @@ namespace ozmanet.neural_network
 {
     public class Network
     {
+        private static float learningRate = 1.0f;
 
         /// <summary>
         /// List of layers in the network
@@ -80,6 +81,111 @@ namespace ozmanet.neural_network
                 m_layers[i].UpdateNeuronOuts();
                 m_layers[i].UpdateNeuronNets();
             }
+        }
+
+        /**
+         * Calculates the error for each output neuron.
+         * Uses the formula: 1/2 * (expected - actual)^2
+         * 
+         * @return the error for each output neuron as a float array 
+         */
+        private float[] CalculateError(float[] expected)
+        {
+            float[] error = new float[expected.Length];
+
+            for (int i = 0; i < expected.Length; i++)
+            {
+                error[i] = 1 / 2 * (float)Math.Pow((expected[i] - m_outputLayer.Neurons[i].Out), 2);
+            }
+
+            return error;
+        }
+
+        /**
+         * Calculates the partial derivative of the error and the output of each output neuron.
+         * Uses the formula: -2 * error
+         * 
+         * @return the partial derivatives as a float array 
+         */
+        private float[] CalculateErrorToOutput(float[] error)
+        {
+            float[] errorToOutput = new float[error.Length];
+
+            for (int i = 0; i < error.Length; i++)
+            {
+                errorToOutput[i] = -2 * error[i];
+            }
+
+            return errorToOutput;
+        }
+
+        /**
+         * Calculates the partial derivative of the output to net for each output neuron.
+         * Uses the formula: out * (1 - out)
+         * 
+         * @return the partial derivatives as a float array
+         */
+        private float[] CalculateOutputToNet(int length)
+        {
+            float[] outputToNet = new float[length];
+
+            for (int i = 0; i < length; i++)
+            {
+                outputToNet[i] = m_outputLayer.Neurons[i].Out * (1f - m_outputLayer.Neurons[i].Out);
+            }
+
+            return outputToNet;
+        }
+
+        /**
+         * Calculates the partial derivative of each output neuron net value to its connected hidden outputs.
+         * 
+         * @return the partial derivatives as a 2d float array
+         */
+        private float[,] CalculateNetToWeight(int length)
+        {
+            //Hardcoded 1 to get hidden layer for now
+            float[,] netToWeight = new float[length, m_layers[1].Neurons.Length];
+
+            for (int i = 0; i < length; i++)
+            {
+                for (int j = 0; j < m_layers[1].Neurons.Length; j++)
+                {
+                    netToWeight[i, j] = m_layers[1].Neurons[j].Out;
+                }
+            }
+
+            return netToWeight;
+        }
+
+        public void Backpropagate(float[] expected)
+        {
+            // Number of input values should be equal to number of input neurons
+            if (expected.Length != m_outputLayer.Neurons.Length)
+            {
+                Console.WriteLine("Invalid expected");
+                return;
+            }
+
+            float[] error = CalculateError(expected);
+
+            float[] errorToOutput = CalculateErrorToOutput(error);
+
+            float[] outputToNet = CalculateOutputToNet(m_outputLayer.Neurons.Length);
+
+            float[,] netToWeight = CalculateNetToWeight(m_outputLayer.Neurons.Length);
+
+            float[,] totalChange = new float[expected.Length, m_layers[1].Neurons.Length];
+
+            for (int i = 0; i < expected.Length; i++)
+            {
+                for (int j = 0; j < m_layers[1].Neurons.Length; j++)
+                {
+                    totalChange[i, j] = errorToOutput[i] * outputToNet[i] * netToWeight[i, j];
+                }
+            }
+
+
         }
 
         /// <summary>
