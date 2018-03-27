@@ -365,7 +365,7 @@ namespace ozmanet.neural_network
                 }
             }
             
-             */
+            */
 
             return new Changes(outputToHiddenChange, hiddenToInputChange);
         }
@@ -445,7 +445,7 @@ namespace ozmanet.neural_network
                 {
                     for (int rightN = 0; rightN < rightLayer.Neurons.Length; rightN++)
                     {
-                        m_layers[l].Links[leftN, rightN].Weight = 0.01f;//(float)rand.NextDouble();
+                        m_layers[l].Links[leftN, rightN].Weight = (float)rand.NextDouble();
                     }
                 }
             }
