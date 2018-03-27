@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using ozmanet.neural_network;
+using ozmanet.util;
 
 namespace NetworkTest
 {
@@ -121,6 +122,54 @@ namespace NetworkTest
             // Check if the network learned
             Assert.AreEqual(0.01f, network.Layers[2].Neurons[0].Out, 0.01f);
             Assert.AreEqual(0.99f, network.Layers[2].Neurons[1].Out, 0.01f);
+        }
+
+        [TestMethod]
+        public void TestLearnOneNumber()
+        {
+            int[] layerSettings = { 784, 15, 10 };
+            Network network = new Network(layerSettings);
+
+            float initialWeight = network.Layers[0].Links[0, 0].Weight;
+
+            MnistReader reader = new MnistReader(
+                "../../../data/digits/training/train-labels.idx1-ubyte",     // path for labels
+                "../../../data/digits/training/train-images.idx3-ubyte");    // path for images
+
+            CharacterImage input = reader.ReadNext();
+            byte[] datab = input.DataTo1D();
+            float[] dataf = new float[datab.Length];
+            if (dataf.Length != 28 * 28)
+            {
+                Console.WriteLine("");
+            }
+
+            for (int i = 0; i < datab.Length; i++)
+            {
+                dataf[i] = (float)datab[i] / 255f;
+            }
+
+            int expected = input.Value - '0';
+            float[] expectedArray = new float[10];
+
+            expectedArray[expected] = 1;
+
+            int actual = network.FeedForward(dataf);
+
+            //Console.WriteLine("Expected: " + expected + " Actual: " + actual);
+
+            reader.Dispose();
+
+            for (int i = 0; i < 10000; i++)
+            {
+                network.FeedForward(dataf);
+                network.Backpropagate(expectedArray);
+            }
+
+            // Check if the network learned
+            Assert.AreEqual(0.00f, network.Layers[2].Neurons[0].Out, 0.01f);
+            Assert.AreEqual(0.99f, network.Layers[2].Neurons[expected].Out, 0.01f);
+            Assert.AreEqual(initialWeight, network.Layers[0].Links[0, 0].Weight, 0.0001f);
         }
     }
 }

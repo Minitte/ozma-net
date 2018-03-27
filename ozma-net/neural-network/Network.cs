@@ -55,6 +55,83 @@ namespace ozmanet.neural_network
             RandomizeWeights(10);
         }
 
+        public void Learn(float[,] inputs, float[,] expected)
+        {
+            // Should be equal amount of sets
+            if (inputs.GetLength(0) != expected.GetLength(0))
+            {
+                Console.WriteLine("Invalid learning input");
+                return;
+            }
+
+            Changes[] changes = new Changes[inputs.GetLength(0)];
+            int floatSize = 4;
+            int inputRowSize = inputs.GetLength(1);
+            int expectedRowSize = expected.GetLength(1);
+
+            // Feed in data one row at a time
+            for (int i = 0; i < inputs.GetLength(0); i++)
+            {
+                float[] inputRow = new float[inputRowSize];
+                Buffer.BlockCopy(inputs, inputRowSize * floatSize * i, inputRow, 0, floatSize * inputRowSize);
+                FeedForward(inputRow);
+
+                float[] expectedRow = new float[expectedRowSize];
+                Buffer.BlockCopy(expected, expectedRowSize * floatSize * i, expectedRow, 0, floatSize * expectedRowSize);
+                changes[i] = Backpropagate(expectedRow);
+            }
+
+            float[,] hiddenChanges = new float[m_outputLayer.Neurons.Length, m_layers[1].Neurons.Length];
+            float[,] inputChanges = new float[m_layers[1].Neurons.Length, m_inputLayer.Neurons.Length];
+
+            for (int i = 0; i < changes.Length; i++)
+            {
+                //float[] totalSumsHidden = new float[m_layers[1].Neurons.Length]; //Sum of change to each weight in hidden layer
+                for (int j = 0; j < changes[i].OutputToHiddenChanges.GetLength(1); j++)
+                {
+                    //float sum = 0.0f;
+                    for (int k = 0; k < changes[i].OutputToHiddenChanges.GetLength(0); k++)
+                    {
+                        hiddenChanges[k, j] += changes[i].OutputToHiddenChanges[k, j];
+                    }
+
+                }
+
+                //float[] totalSumsInput = new float[m_inputLayer.Neurons.Length]; //Sum of change to each weight in input layer
+                for (int j = 0; j < changes[i].HiddenToInputChanges.GetLength(1); j++)
+                {
+                    //float sum = 0.0f;
+                    for (int k = 0; k < changes[i].HiddenToInputChanges.GetLength(0); k++)
+                    {
+                        inputChanges[k, j] += changes[i].HiddenToInputChanges[k, j];
+                    }
+
+                    //inputChanges[j] += sum;
+                }
+            }
+
+            for (int i = 0; i < hiddenChanges.GetLength(0); i++)
+            {
+                for (int j = 0; j < hiddenChanges.GetLength(1); j++)
+                {
+                    hiddenChanges[i, j] /= changes.Length;
+                    m_layers[1].Links[j, i].Weight -= learningRate * hiddenChanges[i, j];
+                }
+            }
+
+
+            for (int i = 0; i < inputChanges.GetLength(0); i++)
+            {
+                for (int j = 0; j < inputChanges.GetLength(1); j++)
+                {
+                    inputChanges[i, j] /= changes.Length;
+                    m_inputLayer.Links[j, i].Weight -= learningRate * inputChanges[i, j];
+                }
+            }
+
+            //Console.WriteLine("OZMA");
+        }
+
         /**
          * Passes the input values forward through the network.
          */
@@ -205,13 +282,13 @@ namespace ozmanet.neural_network
          * Performs backpropagation on the network.
          * Currently assumes that all neurons between two layers are fully connected.
          */
-        public void Backpropagate(float[] expected)
+        public Changes Backpropagate(float[] expected)
         {
             // Number of input values should be equal to number of input neurons
             if (expected.Length != m_outputLayer.Neurons.Length)
             {
                 Console.WriteLine("Invalid expected");
-                return;
+                return null;
             }
 
             float[] error = CalculateError(expected);
@@ -267,6 +344,8 @@ namespace ozmanet.neural_network
                     hiddenToInputChange[i, j] = errorToHiddenOut[i] * hiddenOutToNet[i] * m_inputLayer.Neurons[j].Out;
                 }
             }
+            
+            /*
 
             // Update hidden layer
             for (int i = 0; i < m_layers[1].Neurons.Length; i++)
@@ -285,6 +364,10 @@ namespace ozmanet.neural_network
                     m_inputLayer.Links[i, j].Weight -= learningRate * hiddenToInputChange[j, i];
                 }
             }
+            
+             */
+
+            return new Changes(outputToHiddenChange, hiddenToInputChange);
         }
 
         /// <summary>
@@ -362,10 +445,28 @@ namespace ozmanet.neural_network
                 {
                     for (int rightN = 0; rightN < rightLayer.Neurons.Length; rightN++)
                     {
-                        m_layers[l].Links[leftN, rightN].Weight = (float)rand.NextDouble();
+                        m_layers[l].Links[leftN, rightN].Weight = 0.01f;//(float)rand.NextDouble();
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Class to represent proposed weight changes to the network
+     */
+    public class Changes
+    {
+        float[,] outputToHiddenChanges;
+        float[,] hiddenToInputChanges;
+
+        public float[,] OutputToHiddenChanges { get { return outputToHiddenChanges; } }
+        public float[,] HiddenToInputChanges { get { return hiddenToInputChanges; } }
+
+        public Changes(float[,] outputToHiddenChanges, float[,] hiddenToInputChanges)
+        {
+            this.outputToHiddenChanges = outputToHiddenChanges;
+            this.hiddenToInputChanges = hiddenToInputChanges;
         }
     }
 }
