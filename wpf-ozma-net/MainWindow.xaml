@@ -5,8 +5,25 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:wpf_ozma_net"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
+        Title="MainWindow" Width="630" Height="451">
+
+    <Grid Width="630" Height="450">
+        <Border BorderThickness="2" BorderBrush="Black" Width="280" Height="280" HorizontalAlignment="Left" Margin="10,10,0,130">
+            <InkCanvas Name="DrawingCanvas" Width="280" Height="280" StrokeCollected="StrokeDrawnEvent">
+                <InkCanvas.DefaultDrawingAttributes>
+
+                    <DrawingAttributes Width="5" Height="5" />
+
+                </InkCanvas.DefaultDrawingAttributes>
+            </InkCanvas>
+        </Border>
+
+        <Border BorderThickness="2" BorderBrush="Black" Width="140" Height="140" HorizontalAlignment="Left" Margin="295,150,0,130">
+            <Image Name="NetworkImage"></Image>
+        </Border>
         
+        <Button Content="Clear" HorizontalAlignment="Left" Height="27" Margin="295,25,0,0" VerticalAlignment="Top" Width="140" Click="BtnClearEvent"/>
+        <Button Content="Undo" HorizontalAlignment="Left" Height="27" Margin="295,57,0,0" VerticalAlignment="Top" Width="140" Click="BtnUndoEvent"/>
+        <Button Content="Redo" HorizontalAlignment="Left" Height="27" Margin="295,89,0,0" VerticalAlignment="Top" Width="140" Click="BtnRedoEvent"/>
     </Grid>
 </Window>
