@@ -58,14 +58,16 @@ namespace ozmanet.neural_network
         /**
          * Passes the input values forward through the network.
          */
-        public void FeedForward(float[] inputs)
+        public int FeedForward(float[] inputs)
         {
             // Number of input values should be equal to number of input neurons
             if (inputs.Length != m_inputLayer.Neurons.Length)
             {
                 Console.WriteLine("Invalid input");
-                return;
+                return -1;
             }
+
+            ResetNets();
 
             // Apply the input values
             for (int i = 0; i < inputs.Length; i++)
@@ -89,6 +91,28 @@ namespace ozmanet.neural_network
                 m_outputLayer.Neurons[i].UpdateOut();
             }
 
+            float max = 0.0f;
+            int index = -1;
+
+            for (int i = 0; i < m_outputLayer.Neurons.Length; i++)
+            {
+                if (m_outputLayer.Neurons[i].Out > max)
+                {
+                    max = m_outputLayer.Neurons[i].Out;
+                    index = i;
+                }
+
+
+            }
+            if (max > 0.9f)
+            {
+                return index;
+            }
+            else
+            {
+                return -2;
+            }
+
         }
 
         /**
@@ -104,7 +128,7 @@ namespace ozmanet.neural_network
             for (int i = 0; i < expected.Length; i++)
             {
                 error[i] = 1f / 2 * (float)Math.Pow((expected[i] - m_outputLayer.Neurons[i].Out), 2);
-                Console.WriteLine("Expected: " + expected[i] + " Actual: " + Layers[2].Neurons[i].Out);
+                //Console.WriteLine("Expected: " + expected[i] + " Actual: " + Layers[2].Neurons[i].Out + " Error: " + error[i]);
             }
 
             return error;
@@ -166,6 +190,17 @@ namespace ozmanet.neural_network
             return netToWeight;
         }
 
+        private void ResetNets()
+        {
+            for (int i = 0; i < m_layers.Length; i++)
+            {
+                for (int j = 0; j < m_layers[i].Neurons.Length; j++)
+                {
+                    m_layers[i].Neurons[j].Net = 0.0f;
+                }
+            }
+        }
+
         /**
          * Performs backpropagation on the network.
          * Currently assumes that all neurons between two layers are fully connected.
@@ -190,6 +225,7 @@ namespace ozmanet.neural_network
 
             float[,] netToWeight = DerivativeOutputNetToWeights();
 
+            // Output layer to hidden layer change
             float[,] outputToHiddenChange = new float[expected.Length, m_layers[1].Neurons.Length];
 
             for (int i = 0; i < expected.Length; i++)
@@ -209,7 +245,7 @@ namespace ozmanet.neural_network
                 float sum = 0.0f;
                 for (int j = 0; j < m_layers[1].Neurons.Length; j++)
                 {
-                    sum += outputToHiddenChange[j, i];
+                    sum += outputToHiddenChange[i, j];
                 }
                 errorToHiddenOut[i] = sum;
             }
@@ -233,18 +269,18 @@ namespace ozmanet.neural_network
             }
 
             // Update hidden layer
-            for (int i = 0; i < outputToHiddenChange.GetLength(0); i++)
+            for (int i = 0; i < m_layers[1].Neurons.Length; i++)
             {
-                for (int j = 0; j < outputToHiddenChange.GetLength(1); j++)
+                for (int j = 0; j < m_outputLayer.Neurons.Length; j++)
                 {
                     m_layers[1].Links[i, j].Weight -= learningRate * outputToHiddenChange[j, i];
                 }
             }
 
             // Update input layer
-            for (int i = 0; i < hiddenToInputChange.GetLength(0); i++)
+            for (int i = 0; i < m_inputLayer.Neurons.Length; i++)
             {
-                for (int j = 0; j < hiddenToInputChange.GetLength(1); j++)
+                for (int j = 0; j < m_layers[1].Neurons.Length; j++)
                 {
                     m_inputLayer.Links[i, j].Weight -= learningRate * hiddenToInputChange[j, i];
                 }

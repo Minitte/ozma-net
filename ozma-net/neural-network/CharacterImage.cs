@@ -41,5 +41,25 @@ namespace ozmanet.neural_network
             m_data = data;
             m_value = value;
         }
+
+        /**
+         * Converts the 2d data array into 1d
+         */
+        public byte[] DataTo1D()
+        {
+            byte[] output = new byte[m_data.Length];
+
+            int k = 0;
+            for (int i = 0; i < m_data.GetLength(0); i++)
+            {
+                for (int j = 0; j < m_data.GetLength(1); j++)
+                {
+                    output[k] = m_data[i, j];
+                    k++;
+                }
+            }
+
+            return output;
+        }
     }
 }

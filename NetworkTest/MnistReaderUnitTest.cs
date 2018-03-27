@@ -16,8 +16,8 @@ namespace NetworkTest
         public void Initialize()
         {
             reader = new MnistReader(
-                    "../../../data/digits/test/t10k-labels.idx1-ubyte",     // path for labels
-                    "../../../data/digits/test/t10k-images.idx3-ubyte");    // path for imgs
+                    "../../../../data/digits/test/t10k-labels.idx1-ubyte",     // path for labels
+                    "../../../../data/digits/test/t10k-images.idx3-ubyte");    // path for imgs
         }
 
         [TestCleanup()]

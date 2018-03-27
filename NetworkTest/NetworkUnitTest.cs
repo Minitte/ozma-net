@@ -117,6 +117,10 @@ namespace NetworkTest
                 network.FeedForward(input);
                 network.Backpropagate(expected);
             }
+
+            // Check if the network learned
+            Assert.AreEqual(0.01f, network.Layers[2].Neurons[0].Out, 0.01f);
+            Assert.AreEqual(0.99f, network.Layers[2].Neurons[1].Out, 0.01f);
         }
     }
 }
