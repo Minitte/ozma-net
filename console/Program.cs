@@ -20,7 +20,7 @@ namespace console
             {
                 CharacterImage img = reader.ReadNext();
 
-                console.WriteLine(ToString(img));
+                Console.WriteLine(ToString(img));
 
                 Console.ReadKey();
             }
@@ -31,15 +31,15 @@ namespace console
 
         public static string ToString(CharacterImage img)
         {
-            byte[] pixels = img.Data;
+            byte[,] pixels = img.Data;
             string s = "";
             for (int y = 0; y < 28; y++)
             {
                 for (int x = 0; x < 28; x++)
                 {
-                    if (pixels[x][y] == 0)
+                    if (pixels[x, y] == 0)
                         s += " "; // white
-                    else if (pixels[x][y] == 255)
+                    else if (pixels[x, y] == 255)
                         s += "O"; // black
                     else
                         s += "."; // gray
