@@ -48,6 +48,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LearningUnitTest.cs" />
     <Compile Include="MnistReaderUnitTest.cs" />
     <Compile Include="NetworkUnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
