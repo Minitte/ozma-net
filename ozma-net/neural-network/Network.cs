@@ -317,12 +317,12 @@ namespace ozmanet.neural_network
             
             float[] errorToHiddenOut = new float[m_layers[1].Neurons.Length];
 
-            for (int i = 0; i < expected.Length; i++)
+            for (int i = 0; i < m_layers[1].Neurons.Length; i++)
             {
                 float sum = 0.0f;
-                for (int j = 0; j < m_layers[1].Neurons.Length; j++)
+                for (int j = 0; j < expected.Length; j++)
                 {
-                    sum += outputToHiddenChange[i, j];
+                    sum += errorToOut[j] * outputToNet[j] * m_layers[1].Links[i, j].Weight;
                 }
                 errorToHiddenOut[i] = sum;
             }
@@ -445,7 +445,7 @@ namespace ozmanet.neural_network
                 {
                     for (int rightN = 0; rightN < rightLayer.Neurons.Length; rightN++)
                     {
-                        m_layers[l].Links[leftN, rightN].Weight = (float)rand.NextDouble();
+                        m_layers[l].Links[leftN, rightN].Weight = (float)rand.NextDouble() / 10;
                     }
                 }
             }

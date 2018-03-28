@@ -22,7 +22,7 @@ namespace console
             int setIndex = 0;
             int numSets = 0;
 
-            while (reader.HasNext() && numSets < 300)
+            while (reader.HasNext() && numSets < 1000)
             {
                 CharacterImage input = reader.ReadNext();
                 byte[] dataBytes = input.DataTo1D();
@@ -42,6 +42,7 @@ namespace console
                 {
                     network.Learn(inputSets, expectedSets);
                     numSets++;
+                    Console.Write("\r Learning Progress: " + numSets + " / 1000");
                     setIndex = 0;
                 }
             }
