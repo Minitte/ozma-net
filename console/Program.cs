@@ -16,13 +16,13 @@ namespace console
             "../../../../data/digits/training/train-labels.idx1-ubyte",     // path for labels
             "../../../../data/digits/training/train-images.idx3-ubyte");    // path for images
 
-            float[,] inputSets = new float[50, 784];
-            float[,] expectedSets = new float[50, 10];
+            float[,] inputSets = new float[100, 784];
+            float[,] expectedSets = new float[100, 10];
 
             int setIndex = 0;
             int numSets = 0;
 
-            while (reader.HasNext() && numSets < 1000)
+            while (reader.HasNext() && numSets < 240)
             {
                 CharacterImage input = reader.ReadNext();
                 byte[] dataBytes = input.DataTo1D();
@@ -38,12 +38,13 @@ namespace console
 
                 setIndex++;
 
-                if (setIndex == 50)
+                if (setIndex == 100)
                 {
                     network.Learn(inputSets, expectedSets);
                     numSets++;
-                    Console.Write("\r Learning Progress: " + numSets + " / 1000");
+                    Console.Write("\r Learning Progress: " + numSets + " / 240" + "   Cost: " + network.cost);
                     setIndex = 0;
+                    expectedSets = new float[100, 10];
                 }
             }
 

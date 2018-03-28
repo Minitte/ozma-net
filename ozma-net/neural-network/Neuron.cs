@@ -19,6 +19,8 @@ namespace ozmanet.neural_network
         /// </summary>
         private float out_value;
 
+        private float bias;
+
         public float Net
         {
             get
@@ -44,6 +46,8 @@ namespace ozmanet.neural_network
                 out_value = value;
             }
         }
+
+        public float Bias { get { return bias; } set { bias = value; } }
 
         /// <summary>
         /// Default constructor

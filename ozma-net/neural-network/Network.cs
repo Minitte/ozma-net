@@ -8,6 +8,7 @@ namespace ozmanet.neural_network
     public class Network
     {
         private static float learningRate = 1.0f;
+        public float cost;
 
         /// <summary>
         /// List of layers in the network
@@ -201,12 +202,15 @@ namespace ozmanet.neural_network
         private float[] CalculateError(float[] expected)
         {
             float[] error = new float[expected.Length];
+            float sumError = 0.0f;
 
             for (int i = 0; i < expected.Length; i++)
             {
                 error[i] = 1f / 2 * (float)Math.Pow((expected[i] - m_outputLayer.Neurons[i].Out), 2);
-                //Console.WriteLine("Expected: " + expected[i] + " Actual: " + Layers[2].Neurons[i].Out + " Error: " + error[i]);
+                sumError += error[i];
             }
+
+            cost = sumError; //Update cost
 
             return error;
         }
@@ -344,28 +348,6 @@ namespace ozmanet.neural_network
                     hiddenToInputChange[i, j] = errorToHiddenOut[i] * hiddenOutToNet[i] * m_inputLayer.Neurons[j].Out;
                 }
             }
-            
-            /*
-
-            // Update hidden layer
-            for (int i = 0; i < m_layers[1].Neurons.Length; i++)
-            {
-                for (int j = 0; j < m_outputLayer.Neurons.Length; j++)
-                {
-                    m_layers[1].Links[i, j].Weight -= learningRate * outputToHiddenChange[j, i];
-                }
-            }
-
-            // Update input layer
-            for (int i = 0; i < m_inputLayer.Neurons.Length; i++)
-            {
-                for (int j = 0; j < m_layers[1].Neurons.Length; j++)
-                {
-                    m_inputLayer.Links[i, j].Weight -= learningRate * hiddenToInputChange[j, i];
-                }
-            }
-            
-            */
 
             return new Changes(outputToHiddenChange, hiddenToInputChange);
         }
