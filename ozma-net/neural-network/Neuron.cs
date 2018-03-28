@@ -62,7 +62,7 @@ namespace ozmanet.neural_network
          */
         public float UpdateOut()
         {
-            out_value = util.MathF.Sigmoid(net_value);
+            out_value = util.MathF.Sigmoid(net_value + bias);
             return out_value;
         }
     }

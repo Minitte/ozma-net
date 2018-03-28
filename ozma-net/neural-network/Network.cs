@@ -84,33 +84,49 @@ namespace ozmanet.neural_network
 
             float[,] hiddenChanges = new float[m_outputLayer.Neurons.Length, m_layers[1].Neurons.Length];
             float[,] inputChanges = new float[m_layers[1].Neurons.Length, m_inputLayer.Neurons.Length];
+            float[] outputBiasChanges = new float[m_outputLayer.Neurons.Length];
+            float[] hiddenBiasChanges = new float[m_layers[1].Neurons.Length];
 
             for (int i = 0; i < changes.Length; i++)
             {
-                //float[] totalSumsHidden = new float[m_layers[1].Neurons.Length]; //Sum of change to each weight in hidden layer
+                // Sum of change to each weight in hidden layer
                 for (int j = 0; j < changes[i].OutputToHiddenChanges.GetLength(1); j++)
                 {
-                    //float sum = 0.0f;
                     for (int k = 0; k < changes[i].OutputToHiddenChanges.GetLength(0); k++)
                     {
                         hiddenChanges[k, j] += changes[i].OutputToHiddenChanges[k, j];
                     }
-
                 }
 
-                //float[] totalSumsInput = new float[m_inputLayer.Neurons.Length]; //Sum of change to each weight in input layer
+                // Sum of change to each weight in input layer
                 for (int j = 0; j < changes[i].HiddenToInputChanges.GetLength(1); j++)
                 {
-                    //float sum = 0.0f;
                     for (int k = 0; k < changes[i].HiddenToInputChanges.GetLength(0); k++)
                     {
                         inputChanges[k, j] += changes[i].HiddenToInputChanges[k, j];
                     }
+                }
 
-                    //inputChanges[j] += sum;
+                // Sum of change to each bias in output layer
+                for (int j = 0; j < changes[i].OutputBiasChanges.Length; j++)
+                {
+                    for (int k = 0; k < changes[i].OutputBiasChanges.Length; k++)
+                    {
+                        outputBiasChanges[j] += changes[j].OutputBiasChanges[k];
+                    }
+                }
+
+                // Sum of change to each bias in hidden layer
+                for (int j = 0; j < changes[i].HiddenBiasChanges.Length; j++)
+                {
+                    for (int k = 0; k < changes[i].HiddenBiasChanges.Length; k++)
+                    {
+                        hiddenBiasChanges[j] += changes[j].HiddenBiasChanges[k];
+                    }
                 }
             }
 
+            // Apply changes
             for (int i = 0; i < hiddenChanges.GetLength(0); i++)
             {
                 for (int j = 0; j < hiddenChanges.GetLength(1); j++)
@@ -128,6 +144,16 @@ namespace ozmanet.neural_network
                     inputChanges[i, j] /= changes.Length;
                     m_inputLayer.Links[j, i].Weight -= learningRate * inputChanges[i, j];
                 }
+            }
+
+            for (int i = 0; i < outputBiasChanges.Length; i++)
+            {
+                m_outputLayer.Neurons[i].Bias -= learningRate * outputBiasChanges[i] / changes.Length;
+            }
+
+            for (int i = 0; i < hiddenBiasChanges.Length; i++)
+            {
+                m_layers[1].Neurons[i].Bias -= learningRate * hiddenBiasChanges[i] / changes.Length;
             }
 
             //Console.WriteLine("OZMA");
@@ -349,7 +375,25 @@ namespace ozmanet.neural_network
                 }
             }
 
-            return new Changes(outputToHiddenChange, hiddenToInputChange);
+            // Bias changes
+            float[] outputBiasChanges = new float[m_outputLayer.Neurons.Length];
+
+            for (int i = 0; i < m_outputLayer.Neurons.Length; i++)
+            {
+                outputBiasChanges[i] = errorToOut[i] * outputToNet[i];
+            }
+
+            float[] hiddenBiasChanges = new float[m_layers[1].Neurons.Length];
+
+            for (int i = 0; i < m_layers[1].Neurons.Length; i++)
+            {
+                for (int j = 0; j < m_outputLayer.Neurons.Length; j++)
+                {
+                    hiddenBiasChanges[i] += errorToOut[j] * outputToNet[j];
+                }
+            }
+
+            return new Changes(outputToHiddenChange, hiddenToInputChange, outputBiasChanges, hiddenBiasChanges);
         }
 
         /// <summary>
@@ -427,8 +471,16 @@ namespace ozmanet.neural_network
                 {
                     for (int rightN = 0; rightN < rightLayer.Neurons.Length; rightN++)
                     {
-                        m_layers[l].Links[leftN, rightN].Weight = (float)rand.NextDouble() / 10;
+                        m_layers[l].Links[leftN, rightN].Weight = (float)rand.NextDouble() / 5;
                     }
+                }
+            }
+
+            for (int i = 1; i < numLayer; i++)
+            {
+                for (int j = 0; j < m_layers[i].Neurons.Length; j++)
+                {
+                    m_layers[i].Neurons[j].Bias = (float)rand.NextDouble() * 2;
                 }
             }
         }
@@ -439,16 +491,23 @@ namespace ozmanet.neural_network
      */
     public class Changes
     {
-        float[,] outputToHiddenChanges;
-        float[,] hiddenToInputChanges;
+        private float[,] outputToHiddenChanges;
+        private float[,] hiddenToInputChanges;
+        private float[] outputBiasChanges;
+        private float[] hiddenBiasChanges;
 
         public float[,] OutputToHiddenChanges { get { return outputToHiddenChanges; } }
         public float[,] HiddenToInputChanges { get { return hiddenToInputChanges; } }
+        public float[] OutputBiasChanges { get { return outputBiasChanges; } }
+        public float[] HiddenBiasChanges { get { return hiddenBiasChanges; } }
 
-        public Changes(float[,] outputToHiddenChanges, float[,] hiddenToInputChanges)
+        public Changes(float[,] outputToHiddenChanges, float[,] hiddenToInputChanges,
+            float[] outputBiasChanges, float[] hiddenBiasChanges)
         {
             this.outputToHiddenChanges = outputToHiddenChanges;
             this.hiddenToInputChanges = hiddenToInputChanges;
+            this.outputBiasChanges = outputBiasChanges;
+            this.hiddenBiasChanges = hiddenBiasChanges;
         }
     }
 }
