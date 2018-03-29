@@ -80,6 +80,12 @@ namespace ozmanet.neural_network
                 m_layers[i].UpdateNeuronOuts();
                 m_layers[i].UpdateNeuronNets();
             }
+
+            // Activation function on output layer
+            for (int i = 0; i < m_outputLayer.Neurons.Length; i++)
+            {
+                m_outputLayer.Neurons[i].UpdateOut();
+            }
         }
 
         /// <summary>

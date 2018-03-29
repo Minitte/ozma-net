@@ -323,3 +323,5 @@ ASALocalRun/
 # NVidia Nsight GPU debugger configuration file
 *.nvuser
 *.ide
+data/digits/training/train-images.idx3-ubyte
+data/digits/training/train-labels.idx1-ubyte
