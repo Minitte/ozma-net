@@ -19,6 +19,10 @@ namespace ozmanet.neural_network
         /// </summary>
         private float out_value;
 
+        private float bias;
+
+        private float delta;
+
         public float Net
         {
             get
@@ -45,6 +49,10 @@ namespace ozmanet.neural_network
             }
         }
 
+        public float Bias { get { return bias; } set { bias = value; } }
+
+        public float Delta { get { return delta; } set { delta = value; } }
+
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -58,7 +66,7 @@ namespace ozmanet.neural_network
          */
         public float UpdateOut()
         {
-            out_value = util.MathF.Sigmoid(net_value);
+            out_value = util.MathF.Sigmoid(net_value + bias);
             return out_value;
         }
     }

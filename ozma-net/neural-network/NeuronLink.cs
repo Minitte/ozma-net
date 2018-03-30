@@ -9,6 +9,8 @@ namespace ozmanet.neural_network
         private Neuron m_start, m_end;
         private float m_weight;
 
+        private float delta;
+
         /// <summary>
         /// Left neuron
         /// </summary>
@@ -46,6 +48,8 @@ namespace ozmanet.neural_network
                 m_weight = value;
             }
         }
+
+        public float Delta { get { return delta; } set { delta = value; } }
 
         public NeuronLink(Neuron start, Neuron end, float weight)
         {

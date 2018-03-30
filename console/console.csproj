@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MathNet.Numerics" Version="4.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ozma-net\ozmanet.csproj" />
   </ItemGroup>
 

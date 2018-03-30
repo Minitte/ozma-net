@@ -6,6 +6,10 @@ namespace ozmanet.neural_network
 {
     public class Network
     {
+        private static float learningRate = 1.0f;
+        public float actual;
+
+        public float cost;
 
         /// <summary>
         /// List of layers in the network
@@ -65,6 +69,17 @@ namespace ozmanet.neural_network
                 return;
             }
 
+            //Reset nets
+            for (int i = 0; i < m_layers[m_layers.Length - 2].Neurons.Length; i++)
+            {
+                m_layers[m_layers.Length - 2].Neurons[i].Net = 0.0f;
+            }
+
+            for (int i = 0; i < m_outputLayer.Neurons.Length; i++)
+            {
+                m_outputLayer.Neurons[i].Net = 0.0f;
+            }
+
             // Apply the input values
             for (int i = 0; i < inputs.Length; i++)
             {
@@ -86,6 +101,96 @@ namespace ozmanet.neural_network
             {
                 m_outputLayer.Neurons[i].UpdateOut();
             }
+
+            float max = -1f;
+
+            for (int i = 0; i < m_outputLayer.Neurons.Length; i++)
+            {
+                if (m_outputLayer.Neurons[i].Out > max)
+                {
+                    max = m_outputLayer.Neurons[i].Out;
+                    actual = i;
+                }
+            }
+
+            if (max < 0.5)
+            {
+                actual = -1;
+            }
+        }
+
+        public void Backpropagate(float[] expected)
+        {
+            // Number of expected values should be equal to number of output neurons
+            if (expected.Length != m_outputLayer.Neurons.Length)
+            {
+                Console.WriteLine("Invalid expected");
+                return;
+            }
+
+            float[] error = new float[expected.Length];
+            cost = 0.0f;
+
+            for (int i = 0; i < expected.Length; i++)
+            {
+                error[i] = (float)Math.Pow((expected[i] - m_outputLayer.Neurons[i].Out), 2);
+                cost += error[i];
+            }
+
+            float[] errorToNet = new float[expected.Length];
+
+            for (int i = 0; i < expected.Length; i++)
+            {
+                errorToNet[i] = 2 * (expected[i] - m_outputLayer.Neurons[i].Out)
+                    * util.MathF.SigmoidPrimes(m_outputLayer.Neurons[i].Net);
+
+                for (int j = 0; j < m_layers[m_layers.Length - 2].Neurons.Length; j++)
+                {
+                    m_layers[m_layers.Length - 2].Links[j, i].Delta = errorToNet[i]
+                        * m_layers[m_layers.Length - 2].Neurons[j].Out;
+                }
+            }
+
+            for (int i = 0; i < expected.Length; i++)
+            {
+                for (int j = 0; j < m_layers[m_layers.Length - 2].Neurons.Length; j++)
+                {
+                    float sum = 0.0f;
+                    for (int l = 0; l < m_outputLayer.Neurons.Length; l++)
+                    {
+                        sum += errorToNet[l] * m_layers[m_layers.Length - 2].Links[j, l].Weight;
+                    }
+
+                    for (int k = 0; k < m_inputLayer.Neurons.Length; k++)
+                    {
+                        m_inputLayer.Links[k, j].Delta = sum
+                            * util.MathF.SigmoidPrimes(m_layers[m_layers.Length - 2].Neurons[j].Net)
+                            * m_inputLayer.Neurons[k].Out;
+                    }
+                }
+            }
+
+            // Temp
+            for (int k = 0; k < m_inputLayer.Neurons.Length; k++)
+            {
+                for (int i = 0; i < m_layers[m_layers.Length - 2].Neurons.Length; i++)
+                {
+                    m_inputLayer.Links[k, i].Weight +=
+                        learningRate * m_inputLayer.Links[k, i].Delta;
+
+                    //m_inputLayer.Links[k, i].Delta = 0.0f;
+
+                    for (int j = 0; j < m_outputLayer.Neurons.Length; j++)
+                    {
+                        m_layers[m_layers.Length - 2].Links[i, j].Weight +=
+                            learningRate * m_layers[m_layers.Length - 2].Links[i, j].Delta;
+
+                        //m_layers[m_layers.Length - 2].Links[i, j].Delta = 0.0f;
+                    }
+                }
+            }
+
+
         }
 
         /// <summary>
@@ -163,7 +268,7 @@ namespace ozmanet.neural_network
                 {
                     for (int rightN = 0; rightN < rightLayer.Neurons.Length; rightN++)
                     {
-                        m_layers[l].Links[leftN, rightN].Weight = (float)rand.NextDouble();
+                        m_layers[l].Links[leftN, rightN].Weight = (float)Math.Round((float)rand.NextDouble(), 1);
                     }
                 }
             }
