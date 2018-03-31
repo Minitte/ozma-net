@@ -20,7 +20,8 @@ namespace console
                     "../../../../data/digits/training/train-images.idx3-ubyte");    // path for imgs
 
                 int iterations = 0;
-                while (reader.HasNext() && iterations < 1)
+                int hit = 0;
+                while (reader.HasNext() && iterations < 15000)
                 {
                     CharacterImage input = reader.ReadNext();
 
@@ -39,10 +40,15 @@ namespace console
                     network.FeedForward(dataF);
                     network.Backpropagate(expected);
 
-                    Console.Write("\r Cost: " + Math.Round(network.cost) + " Run #: " + run);
+                    Console.Write("\r Cost: " + Math.Round(network.cost) + " Hits: " + hit + " / " + iterations);
                     iterations++;
+                    if (value == network.actual)
+                    {
+                        hit++;
+                    }
                     //Console.WriteLine("Expected: " + value + " ---- Actual: " + network.actual);
                     //Console.Clear();
+                    //Console.ReadKey();
                 }
 
                 reader.Dispose();
@@ -75,7 +81,7 @@ namespace console
 
                 Console.WriteLine("Expected: " + -1 + " ---- Actual: " + network.actual);
                 Console.ReadKey();
-            }
+             }
             */
            
 

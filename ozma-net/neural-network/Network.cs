@@ -6,10 +6,10 @@ namespace ozmanet.neural_network
 {
     public class Network
     {
-        private static float learningRate = 1.0f;
-        public float actual;
+        private static double learningRate = 1.0;
+        public double actual;
 
-        public float cost;
+        public double cost;
 
         /// <summary>
         /// List of layers in the network
@@ -102,7 +102,7 @@ namespace ozmanet.neural_network
                 m_outputLayer.Neurons[i].UpdateOut();
             }
 
-            float max = -1f;
+            double max = -1.0;
 
             for (int i = 0; i < m_outputLayer.Neurons.Length; i++)
             {
@@ -128,47 +128,50 @@ namespace ozmanet.neural_network
                 return;
             }
 
-            float[] error = new float[expected.Length];
+            double[] error = new double[expected.Length];
             cost = 0.0f;
 
             for (int i = 0; i < expected.Length; i++)
             {
-                error[i] = (float)Math.Pow((expected[i] - m_outputLayer.Neurons[i].Out), 2);
+                error[i] = Math.Pow((expected[i] - m_outputLayer.Neurons[i].Out), 2);
                 cost += error[i];
             }
 
-            float[] errorToNet = new float[expected.Length];
+            double[] errorToNet = new double[expected.Length];
 
             for (int i = 0; i < expected.Length; i++)
             {
-                errorToNet[i] = 2 * (expected[i] - m_outputLayer.Neurons[i].Out)
+                errorToNet[i] = 2.0 * (expected[i] - m_outputLayer.Neurons[i].Out)
                     * util.MathF.SigmoidPrimes(m_outputLayer.Neurons[i].Net);
+
+                m_outputLayer.Neurons[i].Delta += errorToNet[i];
 
                 for (int j = 0; j < m_layers[m_layers.Length - 2].Neurons.Length; j++)
                 {
-                    m_layers[m_layers.Length - 2].Links[j, i].Delta = errorToNet[i]
+                    m_layers[m_layers.Length - 2].Links[j, i].Delta += errorToNet[i]
                         * m_layers[m_layers.Length - 2].Neurons[j].Out;
                 }
             }
 
-            for (int i = 0; i < expected.Length; i++)
+            for (int j = 0; j < m_layers[m_layers.Length - 2].Neurons.Length; j++)
             {
-                for (int j = 0; j < m_layers[m_layers.Length - 2].Neurons.Length; j++)
+                double sum = 0.0;
+                for (int l = 0; l < m_outputLayer.Neurons.Length; l++)
                 {
-                    float sum = 0.0f;
-                    for (int l = 0; l < m_outputLayer.Neurons.Length; l++)
-                    {
-                        sum += errorToNet[l] * m_layers[m_layers.Length - 2].Links[j, l].Weight;
-                    }
-
-                    for (int k = 0; k < m_inputLayer.Neurons.Length; k++)
-                    {
-                        m_inputLayer.Links[k, j].Delta = sum
-                            * util.MathF.SigmoidPrimes(m_layers[m_layers.Length - 2].Neurons[j].Net)
-                            * m_inputLayer.Neurons[k].Out;
-                    }
+                    sum += errorToNet[l] * m_layers[m_layers.Length - 2].Links[j, l].Weight;
                 }
+
+                for (int k = 0; k < m_inputLayer.Neurons.Length; k++)
+                {
+                    m_inputLayer.Links[k, j].Delta += sum
+                        * util.MathF.SigmoidPrimes(m_layers[m_layers.Length - 2].Neurons[j].Net)
+                        * m_inputLayer.Neurons[k].Out;
+
+                    
+                }
+                m_layers[m_layers.Length - 2].Neurons[j].Delta += sum * util.MathF.SigmoidPrimes(m_layers[m_layers.Length - 2].Neurons[j].Net);
             }
+
 
             // Temp
             for (int k = 0; k < m_inputLayer.Neurons.Length; k++)
@@ -178,18 +181,32 @@ namespace ozmanet.neural_network
                     m_inputLayer.Links[k, i].Weight +=
                         learningRate * m_inputLayer.Links[k, i].Delta;
 
-                    //m_inputLayer.Links[k, i].Delta = 0.0f;
+                    m_inputLayer.Links[k, i].Delta = 0.0;
+                }
+            }
+       
+            for (int i = 0; i < m_layers[m_layers.Length - 2].Neurons.Length; i++)
+            {
+                for (int j = 0; j < m_outputLayer.Neurons.Length; j++)
+                {
+                    m_layers[m_layers.Length - 2].Links[i, j].Weight +=
+                        learningRate * m_layers[m_layers.Length - 2].Links[i, j].Delta;
 
-                    for (int j = 0; j < m_outputLayer.Neurons.Length; j++)
-                    {
-                        m_layers[m_layers.Length - 2].Links[i, j].Weight +=
-                            learningRate * m_layers[m_layers.Length - 2].Links[i, j].Delta;
-
-                        //m_layers[m_layers.Length - 2].Links[i, j].Delta = 0.0f;
-                    }
+                    m_layers[m_layers.Length - 2].Links[i, j].Delta = 0.0;
                 }
             }
 
+            for (int i = 0; i < m_outputLayer.Neurons.Length; i++)
+            {
+                m_outputLayer.Neurons[i].Bias += learningRate * m_outputLayer.Neurons[i].Delta;
+                m_outputLayer.Neurons[i].Delta = 0.0;
+            }
+
+            for (int i = 0; i < m_layers[m_layers.Length - 2].Neurons.Length; i++)
+            {
+                m_layers[m_layers.Length - 2].Neurons[i].Bias += learningRate * m_layers[m_layers.Length - 2].Neurons[i].Delta;
+                m_layers[m_layers.Length - 2].Neurons[i].Delta = 0.0;
+            }
 
         }
 
@@ -268,9 +285,18 @@ namespace ozmanet.neural_network
                 {
                     for (int rightN = 0; rightN < rightLayer.Neurons.Length; rightN++)
                     {
-                        m_layers[l].Links[leftN, rightN].Weight = (float)Math.Round((float)rand.NextDouble(), 1);
+                        m_layers[l].Links[leftN, rightN].Weight = Math.Round(rand.NextDouble(), 1) / 10;
                     }
                 }
+            }
+
+            for (int i = 1; i < numLayer; i++)
+            {
+                for (int j = 0; j < m_layers[i].Neurons.Length; j++)
+                {
+                    m_layers[i].Neurons[j].Bias = -Math.Round(rand.NextDouble(), 1);
+                }
+
             }
         }
     }

@@ -14,7 +14,7 @@ namespace ozmanet.util
     public class MathF
     {
 
-        public static float E = (float)Math.E;
+        public static double E = Math.E;
 
         private MathF() { }
 
@@ -24,9 +24,9 @@ namespace ozmanet.util
         /// <param name="value"></param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Exp(float value)
+        public static double Exp(double value)
         {
-            return (float)Math.Pow(Math.E, value);
+            return Math.Pow(Math.E, value);
         }
 
         /// <summary>
@@ -35,9 +35,9 @@ namespace ozmanet.util
         /// <param name="value"></param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Sigmoid(float value)
+        public static double Sigmoid(double value)
         {
-            return 1f / (1f + Exp(-value));
+            return 1.0 / (1.0 + Exp(-value));
         }
 
         /// <summary>
@@ -46,9 +46,9 @@ namespace ozmanet.util
         /// <param name="value"></param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float SigmoidPrimes(float value)
+        public static double SigmoidPrimes(double value)
         {
-            return Sigmoid(value) * (1f - Sigmoid(value));
+            return Sigmoid(value) * (1.0 - Sigmoid(value));
         }
 
 

@@ -8,7 +8,7 @@ namespace NetworkTest
     [TestClass]
     public class NetworkUnitTest
     {
-
+        /*
         [TestMethod]
         public void TestLinkReferences()
         {
@@ -92,5 +92,6 @@ namespace NetworkTest
             // Check output layer net value
             Assert.AreEqual(H1Out * H1ToOutputWeight + H2Out * H2ToOutputWeight, layers[2].Neurons[0].Net, 0.01f);
         }
+        */
     }
 }
