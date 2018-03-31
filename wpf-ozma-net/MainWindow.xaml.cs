@@ -37,6 +37,8 @@ namespace wpf_ozma_net
 
             m_undoStack = new Stack<StrokeAction>();
             m_redoStack = new Stack<StrokeAction>();
+
+            DrawingCanvas.AddHandler(InkCanvas.MouseDownEvent, new MouseButtonEventHandler(DrawingMouseDownEvent), true);
         }
 
         /// <summary>
@@ -101,13 +103,16 @@ namespace wpf_ozma_net
             
             NetworkImage.Source = res;
 
+            float[] input = ConvertToNetworkInput(res);
+            Console.WriteLine("============================");
+            Console.Write(ToStringArt(input));
+            Console.WriteLine("============================");
+
             // ask network
             if (m_network == null)
             {
                 return;
             }
-
-            float[] input = ConvertToNetworkInput(res);
 
             int result = m_network.FeedForward(input);
 
@@ -166,7 +171,7 @@ namespace wpf_ozma_net
                     data[i] = data[i] > 1.0f ? 1.0f : data[i];
                 }
             }
-            Console.WriteLine(ToStringArt(data));
+
             return data;
         }
 
@@ -269,6 +274,7 @@ namespace wpf_ozma_net
         private void BtnUndoEvent(object sender, RoutedEventArgs e)
         {
             UndoStroke();
+            UpdateNetworkImage();
         }
 
         /// <summary>
@@ -279,6 +285,7 @@ namespace wpf_ozma_net
         private void BtnRedoEvent(object sender, RoutedEventArgs e)
         {
             RedoStroke();
+            UpdateNetworkImage();
         }
 
         /// <summary>
@@ -316,6 +323,7 @@ namespace wpf_ozma_net
             m_undoStack.Push(new StrokeAction(strokeList, false));
 
             DrawingCanvas.Strokes.Clear();
+            UpdateNetworkImage();
         }
 
         private void BtnLoadNetworkEvent(object sender, RoutedEventArgs e)
@@ -329,6 +337,8 @@ namespace wpf_ozma_net
             {
                 LoadNetwork(dialog.FileName);
             }
+
+            UpdateNetworkImage();
         }
 
         private void LoadNetwork(String path)
@@ -375,6 +385,14 @@ namespace wpf_ozma_net
                 TransformedBitmap res = new TransformedBitmap(img, s);
 
                 SaveBitmapAsPNG(res, dialog.FileName);
+            }
+        }
+
+        private void DrawingMouseDownEvent(object sender, MouseButtonEventArgs e)
+        {
+            if (m_network != null)
+            {
+                NetworkResultText.Text = "...";
             }
         }
     }
