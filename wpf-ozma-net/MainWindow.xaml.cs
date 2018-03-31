@@ -17,6 +17,7 @@ using System.Windows.Ink;
 
 using ozmanet.neural_network;
 using ozmanet.util;
+using Microsoft.Win32;
 
 namespace wpf_ozma_net
 {
@@ -98,7 +99,7 @@ namespace wpf_ozma_net
             ScaleTransform s = new ScaleTransform(0.1, 0.1);
 
             TransformedBitmap res = new TransformedBitmap(img, s);
-
+            
             NetworkImage.Source = res;
 
             // ask network
@@ -285,7 +286,7 @@ namespace wpf_ozma_net
 
         private void BtnLoadNetworkEvent(object sender, RoutedEventArgs e)
         {
-            Microsoft.Win32.OpenFileDialog dialog = new Microsoft.Win32.OpenFileDialog();
+            OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter = "Ozma Network (*.ozmanet)|*.ozmanet";
             dialog.FilterIndex = 1;
             dialog.RestoreDirectory = true;
@@ -308,6 +309,39 @@ namespace wpf_ozma_net
             //reader.Close();
             //stream.Close();
             loader.Dispose();
+        }
+
+        private void SaveBitmapAsPNG(BitmapSource img, String filePath)
+        {
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                BitmapEncoder encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(img));
+                encoder.Save(fileStream);
+            }
+        }
+
+        private void BtnSaveNetworkImgEvent(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.Filter = "PNG (*.png)|*.png";
+            dialog.FilterIndex = 1;
+            dialog.RestoreDirectory = true;
+
+            if (dialog.ShowDialog() == true)
+            {
+
+                byte[] data = DrawingToBitmap();
+
+                BitmapImage img = ToImage(data);
+                WriteableBitmap modImg = new WriteableBitmap(img);
+
+                ScaleTransform s = new ScaleTransform(0.1, 0.1);
+
+                TransformedBitmap res = new TransformedBitmap(img, s);
+
+                SaveBitmapAsPNG(res, dialog.FileName);
+            }
         }
     }
 }
