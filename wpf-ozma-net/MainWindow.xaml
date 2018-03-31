@@ -7,8 +7,8 @@
         mc:Ignorable="d"
         Title="MainWindow" Width="630" Height="451">
 
-    <Grid Width="630" Height="450">
-        <Border BorderThickness="1" BorderBrush="Black" Width="280" Height="280" HorizontalAlignment="Left" Margin="10,10,0,130">
+    <Grid Width="630" Height="450" Background="#ddd">
+        <Border BorderThickness="0" BorderBrush="Black" Width="280" Height="280" HorizontalAlignment="Left" Margin="10,10,0,130">
             <InkCanvas Name="DrawingCanvas" Width="280" Height="280" StrokeCollected="StrokeDrawnEvent">
                 <InkCanvas.DefaultDrawingAttributes>
 
