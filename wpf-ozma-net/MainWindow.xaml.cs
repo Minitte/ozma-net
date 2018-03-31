@@ -38,14 +38,6 @@ namespace wpf_ozma_net
             m_redoStack = new Stack<StrokeAction>();
         }
 
-        private void InitNetwork()
-        {
-            // init network
-            NetworkLoader loader = new NetworkLoader("digit-net.ozmanet");
-            m_network = loader.Load();
-            loader.Dispose();
-        }
-
         /// <summary>
         /// Converts the drawing from the app into a byte array
         /// </summary>
@@ -112,7 +104,7 @@ namespace wpf_ozma_net
             // ask network
             if (m_network == null)
             {
-                InitNetwork();
+                return;
             }
 
             float[] input = ConvertToNetworkInput(res);
@@ -289,6 +281,33 @@ namespace wpf_ozma_net
             m_undoStack.Push(new StrokeAction(strokeList, false));
 
             DrawingCanvas.Strokes.Clear();
+        }
+
+        private void BtnLoadNetworkEvent(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.OpenFileDialog dialog = new Microsoft.Win32.OpenFileDialog();
+            dialog.Filter = "Ozma Network (*.ozmanet)|*.ozmanet";
+            dialog.FilterIndex = 1;
+            dialog.RestoreDirectory = true;
+
+            if (dialog.ShowDialog() == true)
+            {
+                LoadNetwork(dialog.FileName);
+            }
+        }
+
+        private void LoadNetwork(String path)
+        {
+            // init network
+            //FileStream stream = new FileStream(path, FileMode.Open);
+            //StreamReader reader = new StreamReader(stream);
+
+            NetworkLoader loader = new NetworkLoader(path);
+            m_network = loader.Load();
+
+            //reader.Close();
+            //stream.Close();
+            loader.Dispose();
         }
     }
 }

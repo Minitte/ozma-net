@@ -97,6 +97,7 @@
     <ProjectReference Include="..\ozma-net\ozmanet.csproj">
       <Project>{2a5e8921-05f1-4312-a68a-c68988e8d487}</Project>
       <Name>ozmanet</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
