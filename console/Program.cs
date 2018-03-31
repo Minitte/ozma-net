@@ -13,7 +13,7 @@ namespace console
             Network network = new Network(layerSettings);
 
             int numSets = 10;
-
+            int learningIterations = 500;
 
             for (int run = 0; run < 1; run++)
             {
@@ -26,7 +26,7 @@ namespace console
 
                 int iterations = 0;
 
-                while (reader.HasNext() && iterations < 1000)
+                while (reader.HasNext() && iterations < learningIterations)
                 {
                     iterations++;
                     float[,] inputSet = new float[numSets, 784];
@@ -67,7 +67,7 @@ namespace console
                 iterations = 0;
                 Console.WriteLine();
 
-                while (reader.HasNext() && iterations < 10000)
+                while (reader.HasNext() && iterations < learningIterations * numSets)
                 {
                     iterations++;
 

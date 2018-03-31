@@ -172,37 +172,37 @@ namespace ozmanet.neural_network
             }
 
             //Reset nets
-            for (int i = 0; i < m_layers[m_layers.Length - 2].Neurons.Length; i++)
+            Parallel.For(0, m_layers[m_layers.Length - 2].Neurons.Length, i => //(int i = 0; i < m_layers[m_layers.Length - 2].Neurons.Length; i++)
             {
                 m_layers[m_layers.Length - 2].Neurons[i].Net = 0.0f;
-            }
+            });
 
-            for (int i = 0; i < m_outputLayer.Neurons.Length; i++)
+            Parallel.For(0, m_outputLayer.Neurons.Length, i => //(int i = 0; i < m_outputLayer.Neurons.Length; i++)
             {
                 m_outputLayer.Neurons[i].Net = 0.0f;
-            }
+            });
 
             // Apply the input values
-            for (int i = 0; i < inputs.Length; i++)
+            Parallel.For(0, inputs.Length, i => //(int i = 0; i < inputs.Length; i++)
             {
                 m_inputLayer.Neurons[i].Out = inputs[i];
-            }
+            });
 
             // Input layer to hidden layer
             m_inputLayer.UpdateNeuronNets();
 
             // Feed forward
-            for (int i = 1; i < m_layers.Length - 1; i++)
+            Parallel.For(1, m_layers.Length - 1, i => //(int i = 1; i < m_layers.Length - 1; i++)
             {
                 m_layers[i].UpdateNeuronOuts();
                 m_layers[i].UpdateNeuronNets();
-            }
+            });
 
             // Activation function on output layer
-            for (int i = 0; i < m_outputLayer.Neurons.Length; i++)
+            Parallel.For(0, m_outputLayer.Neurons.Length, i => //(int i = 0; i < m_outputLayer.Neurons.Length; i++)
             {
                 m_outputLayer.Neurons[i].UpdateOut();
-            }
+            });
 
             double max = -1.0;
             int actual = -1;
@@ -217,7 +217,7 @@ namespace ozmanet.neural_network
             }
 
             // Return the value
-            return max < 0.5 ? actual : -2;
+            return max > 0.5 ? actual : -2;
         }
 
         public void Backpropagate(float[] expected)
