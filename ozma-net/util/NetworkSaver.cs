@@ -9,6 +9,8 @@ namespace ozmanet.util
     public class NetworkSaver
     {
 
+        private static int VERSION = 2;
+
         StreamWriter writer;
 
         public NetworkSaver(String path)
@@ -32,6 +34,11 @@ namespace ozmanet.util
         /// <param name="net"></param>
         private void WriteHeader(Network net)
         {
+            // network version format
+            writer.WriteLine(VERSION);
+
+            writer.WriteLine(net.TrainCount);
+
             // number of layers
             writer.WriteLine(net.Layout.Length);
 
