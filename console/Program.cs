@@ -7,12 +7,15 @@ namespace console
 {
     class Program
     {
+
+        static int alterateFile = 1;
+
         static void Main(string[] args)
         {
             int[] layersettings = { 784, 30, 10 };
             //Network network = new Network(layersettings);
 
-            String savePath = "digit-net.ozmanet";
+            String savePath = "1digit-net.ozmanet";
             NetworkLoader loader = new NetworkLoader(savePath);
             Network network = loader.Load();
             loader.Dispose();
@@ -73,7 +76,7 @@ namespace console
 
                 network.Learn(inputSet, expectedSet);
 
-                Console.Write("\r Learning Hits: " + network.TotalHits + " / " + iterations * numSets);
+                Console.Write("\r Learning Hits: " + network.TotalHits + " / " + iterations * numSets + " (" + (int)(((float)network.TotalHits / ((float)iterations * (float)numSets)) * 100) + "%)");
 
             }
 
@@ -122,11 +125,13 @@ namespace console
 
         static void SaveNetwork(Network network, String savePath)
         {
-            Console.WriteLine("Saving to " + savePath + " ...");
+            Console.WriteLine("Saving to " + alterateFile + savePath + " ...");
 
-            NetworkSaver saver = new NetworkSaver(savePath);
+            NetworkSaver saver = new NetworkSaver(alterateFile + savePath);
             saver.Save(network);
             saver.Dispose();
+
+            alterateFile = alterateFile == 1 ? 2 : alterateFile;
         }
 
         static byte[] DataTo1D(byte[,] input)
