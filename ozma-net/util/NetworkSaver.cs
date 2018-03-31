@@ -32,6 +32,9 @@ namespace ozmanet.util
         /// <param name="net"></param>
         private void WriteHeader(Network net)
         {
+            // number of layers
+            writer.Write(net.Layout.Length);
+
             foreach (int n in net.Layout)
             {
                 writer.Write(n);
