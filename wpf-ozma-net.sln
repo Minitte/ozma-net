@@ -9,7 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkTest", "NetworkTest\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ozmanet", "ozma-net\ozmanet.csproj", "{2A5E8921-05F1-4312-A68A-C68988E8D487}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "console", "console\console.csproj", "{03F7F647-0569-4E9D-A17C-7B806A9F26C0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "console", "console\console.csproj", "{03F7F647-0569-4E9D-A17C-7B806A9F26C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "alexnet", "alexnet\alexnet.csproj", "{F7103C83-570F-4FF1-95AB-FEC861D7A789}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{03F7F647-0569-4E9D-A17C-7B806A9F26C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03F7F647-0569-4E9D-A17C-7B806A9F26C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03F7F647-0569-4E9D-A17C-7B806A9F26C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7103C83-570F-4FF1-95AB-FEC861D7A789}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7103C83-570F-4FF1-95AB-FEC861D7A789}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7103C83-570F-4FF1-95AB-FEC861D7A789}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7103C83-570F-4FF1-95AB-FEC861D7A789}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
