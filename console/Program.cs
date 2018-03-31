@@ -20,7 +20,7 @@ namespace console
             int numSets = 10;
             int learningIterations = 60000;
 
-            for (int run = 0; run < 4; run++)
+            for (int run = 0; run < 5; run++)
             {
 
                 #region test run
