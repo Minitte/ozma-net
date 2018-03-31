@@ -101,20 +101,19 @@ namespace wpf_ozma_net
 
             TransformedBitmap res = new TransformedBitmap(img, s);
 
-            RotateTransform r = new RotateTransform(-270);
-            ScaleTransform flip = new ScaleTransform(-1, 1);
+            //RotateTransform r = new RotateTransform(-270);
+            //ScaleTransform flip = new ScaleTransform(-1, 1);
 
-            TransformGroup transGroup = new TransformGroup();
-            transGroup.Children.Add(s);
-            transGroup.Children.Add(r);
-            transGroup.Children.Add(flip);
+            //TransformGroup transGroup = new TransformGroup();
+            //transGroup.Children.Add(s);
+            //transGroup.Children.Add(r);
+            //transGroup.Children.Add(flip);
 
-            // this 1 is for the network
-            TransformedBitmap rot = new TransformedBitmap(img, transGroup);
+            //TransformedBitmap rot = new TransformedBitmap(img, transGroup);
 
-            NetworkImage.Source = rot;
+            NetworkImage.Source = res;
 
-            float[] input = ConvertToNetworkInput(rot);
+            float[] input = ConvertToNetworkInput(res);
             Console.WriteLine("============================");
             Console.Write(ToStringArt(input));
             Console.WriteLine("============================");
