@@ -17,6 +17,9 @@ namespace console
 
             for (int run = 0; run < 1; run++)
             {
+                Console.WriteLine("----- Run #" + run + "-----");
+                network.TotalHits = 0;
+
                 MnistReader reader = new MnistReader(
                     "../../../../data/digits/training/train-labels.idx1-ubyte",     // path for labels
                     "../../../../data/digits/training/train-images.idx3-ubyte");    // path for imgs
@@ -50,7 +53,7 @@ namespace console
 
                     network.Learn(inputSet, expectedSet);
 
-                    Console.Write("\r Learning Hits: " + network.totalHits + " / " + iterations * numSets);
+                    Console.Write("\r Learning Hits: " + network.TotalHits + " / " + iterations * numSets);
                     
                 }
 
@@ -62,7 +65,7 @@ namespace console
 
                 int hits = 0;
                 iterations = 0;
-                Console.Clear();
+                Console.WriteLine();
 
                 while (reader.HasNext() && iterations < 10000)
                 {
@@ -81,16 +84,19 @@ namespace console
                     int value = input.Value - '0';
                     expected[value] = 1f;
 
-                    network.FeedForward(dataF);
-
-                    if (network.actual == value)
+                    if (network.FeedForward(dataF) == value)
                     {
                         hits++;
                     }
 
-                    Console.Write("\r Run " + run + ": " + hits + " / " + iterations);
+                    Console.Write("\r Hits: " + hits + " / " + iterations);
                 }
+
+                Console.WriteLine();
             }
+
+            Console.WriteLine("Done");
+            Console.ReadKey();
         }
 
         static byte[] DataTo1D(byte[,] input)

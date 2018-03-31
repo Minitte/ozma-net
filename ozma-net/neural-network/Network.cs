@@ -7,12 +7,20 @@ namespace ozmanet.neural_network
 {
     public class Network
     {
+        /**
+         * Learning rate
+         */
         private static double learningRate = 1.0;
-        public double actual;
 
-        public double cost;
+        /**
+         * Sum of all output neuron errors
+         */
+        private double cost;
 
-        public int totalHits;
+        /**
+         * Total number of hits for the current run
+         */
+        private int totalHits;
 
         /// <summary>
         /// List of layers in the network
@@ -39,6 +47,16 @@ namespace ozmanet.neural_network
                 return m_layers;
             }
         }
+
+        /**
+         * Getter for cost 
+         */
+        public double Cost { get { return cost; } }
+
+        /**
+         * Getter for total hits
+         */
+        public int TotalHits { get { return totalHits; } set { totalHits = value; } }
 
         /// <summary>
         /// 
@@ -71,7 +89,6 @@ namespace ozmanet.neural_network
                 Console.WriteLine("Sets are uneven");
                 return;
             }
-            //totalHits = 0;
 
             double numSets = inputs.GetLength(0);
             int floatSize = 4;
@@ -95,9 +112,7 @@ namespace ozmanet.neural_network
                     }
                 }
 
-                FeedForward(input);
-
-                if (actual == expectedNum)
+                if (FeedForward(input) == expectedNum)
                 {
                     totalHits++;
                 }
@@ -147,13 +162,13 @@ namespace ozmanet.neural_network
         /**
          * Passes the input values forward through the network.
          */
-        public void FeedForward(float[] inputs)
+        public int FeedForward(float[] inputs)
         {
             // Number of input values should be equal to number of input neurons
             if (inputs.Length != m_inputLayer.Neurons.Length)
             {
                 Console.WriteLine("Invalid input");
-                return;
+                return -3;
             }
 
             //Reset nets
@@ -190,6 +205,7 @@ namespace ozmanet.neural_network
             }
 
             double max = -1.0;
+            int actual = -1;
 
             for (int i = 0; i < m_outputLayer.Neurons.Length; i++)
             {
@@ -200,10 +216,8 @@ namespace ozmanet.neural_network
                 }
             }
 
-            if (max < 0.5)
-            {
-                actual = -1;
-            }
+            // Return the value
+            return max < 0.5 ? actual : -2;
         }
 
         public void Backpropagate(float[] expected)
