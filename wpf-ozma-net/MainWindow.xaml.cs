@@ -146,16 +146,48 @@ namespace wpf_ozma_net
                 int px = pxBuffer[i];
                 int r = px & 0x00ff0000;
                 r = r >> 16;
+                r = r ^ 255;
                 int g = px & 0x0000ff00;
                 g = g >> 8;
+                g = g ^ 255;
                 int b = px & 0x000000ff;
+                b = b ^ 255;
 
                 // calculate y value
-                data[i] = ((0.299f * r) + (0.567f * g) + (0.114f * b)) / 255f;
-            }
+                //data[i] = ((0.299f * r) + (0.567f * g) + (0.114f * b)) / 255f;
 
+                // alt, gray average
+                data[i] = ((r + g + b) / 3f) / 255f;
+
+                // darkening
+                if (data[i] != 0)
+                {
+                    data[i] *= 1.5f;
+                    data[i] = data[i] > 1.0f ? 1.0f : data[i];
+                }
+            }
+            Console.WriteLine(ToStringArt(data));
             return data;
         }
+
+        public string ToStringArt(float[] pixels)
+        {
+            string s = "";
+            for (int i = 0; i < 28; ++i)
+            {
+                for (int j = 0; j < 28; ++j)
+                {
+                    if (pixels[(i * 28) + j] == 0)
+                        s += " "; // white
+                    else if (pixels[(i * 28) + j] > 0.9)
+                        s += "O"; // black
+                    else
+                        s += "."; // gray
+                }
+                s += "\n";
+            }
+            return s;
+        } // ToString
 
         /// <summary>
         /// Undo last action
