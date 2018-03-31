@@ -55,9 +55,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="util\MathF.cs" />
-    <Compile Include="util\MnistReader.cs" />
     <Compile Include="util\NetworkLoader.cs" />
-    <Compile Include="util\NetworkSaver.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
