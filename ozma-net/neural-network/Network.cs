@@ -40,12 +40,16 @@ namespace ozmanet.neural_network
             }
         }
 
+        public int[] Layout;
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="numNeurons">number of neurons per layer, must be atleast 3 layers!</param>
         public Network(int[] numNeurons)
         {
+            Layout = numNeurons;
+
             // create layers
             CreateLayers(numNeurons);
 
