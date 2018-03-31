@@ -33,11 +33,11 @@ namespace ozmanet.util
         private void WriteHeader(Network net)
         {
             // number of layers
-            writer.Write(net.Layout.Length);
+            writer.WriteLine(net.Layout.Length);
 
             foreach (int n in net.Layout)
             {
-                writer.Write(n);
+                writer.WriteLine(n);
             }
         }
 
@@ -53,7 +53,7 @@ namespace ozmanet.util
                 // all neurons
                 foreach (Neuron n in layer.Neurons)
                 {
-                    writer.Write(n.Bias);
+                    writer.WriteLine(n.Bias);
                 }
 
                 // all links
@@ -61,7 +61,7 @@ namespace ozmanet.util
                 {
                     for (int y = 0; y < layer.Links.GetLength(1); y++)
                     {
-                        writer.Write(layer.Links[x, y].Weight);
+                        writer.WriteLine(layer.Links[x, y].Weight);
                     }
                 }
             }
