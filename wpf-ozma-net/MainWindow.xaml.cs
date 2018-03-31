@@ -134,8 +134,10 @@ namespace wpf_ozma_net
             float[] data = new float[w * h];
             int[] pxBuffer = new int[w * h];
 
+            int stride = ((img.PixelWidth * img.Format.BitsPerPixel) + 7) / 8;
+
             // copy argb pixels to buffer
-            img.CopyPixels(pxBuffer, w * 4, 0);
+            img.CopyPixels(pxBuffer, stride, 0);
 
             // for all pixels in buffer
             for (int i = 0; i < h * w; i++)
