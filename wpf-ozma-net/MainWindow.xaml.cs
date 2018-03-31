@@ -144,12 +144,13 @@ namespace wpf_ozma_net
                 // extract rgb values
                 int px = pxBuffer[i];
                 int r = px & 0x00ff0000;
+                r = r >> 16;
                 int g = px & 0x0000ff00;
+                g = g >> 8;
                 int b = px & 0x000000ff;
 
                 // calculate y value
                 data[i] = ((0.299f * r) + (0.567f * g) + (0.114f * b)) / 255f;
-                
             }
 
             return data;
