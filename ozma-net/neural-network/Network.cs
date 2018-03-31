@@ -15,6 +15,11 @@ namespace ozmanet.neural_network
         public int totalHits;
 
         /// <summary>
+        /// Network Layout
+        /// </summary>
+        private int[] m_layout;
+
+        /// <summary>
         /// List of layers in the network
         /// </summary>
         private NeuronLinkLayer[] m_layers;
@@ -40,7 +45,16 @@ namespace ozmanet.neural_network
             }
         }
 
-        public int[] Layout;
+        /// <summary>
+        /// Network Layout
+        /// </summary>
+        public int[] Layout
+        {
+            get
+            {
+                return m_layout;
+            }
+        }
 
         /// <summary>
         /// 
@@ -48,7 +62,7 @@ namespace ozmanet.neural_network
         /// <param name="numNeurons">number of neurons per layer, must be atleast 3 layers!</param>
         public Network(int[] numNeurons)
         {
-            Layout = numNeurons;
+            m_layout = numNeurons;
 
             // create layers
             CreateLayers(numNeurons);
