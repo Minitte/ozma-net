@@ -94,7 +94,6 @@ namespace wpf_ozma_net
             byte[] data = DrawingToBitmap();
 
             BitmapImage img = ToImage(data);
-            WriteableBitmap modImg = new WriteableBitmap(img);
 
             ScaleTransform s = new ScaleTransform(0.1, 0.1);
 
