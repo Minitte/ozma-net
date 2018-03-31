@@ -258,7 +258,7 @@ namespace ozmanet.neural_network
             }
 
             // Return the value
-            return max > 0.5 ? actual : -2;
+            return max > 0.85 ? actual : -2;
         }
 
         public void Backpropagate(float[] expected)

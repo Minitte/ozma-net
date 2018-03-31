@@ -12,13 +12,13 @@ namespace console
 
         static void Main(string[] args)
         {
-            int[] layersettings = { 784, 30, 10 };
-            //Network network = new Network(layersettings);
+            int[] layersettings = { 784, 45, 10 };
+            Network network = new Network(layersettings);
 
-            String savePath = "1digit-net.ozmanet";
-            NetworkLoader loader = new NetworkLoader(savePath);
-            Network network = loader.Load();
-            loader.Dispose();
+            String savePath = "digit-net.ozmanet";
+            //NetworkLoader loader = new NetworkLoader(savePath);
+            //Network network = loader.Load();
+            //loader.Dispose();
 
             int numSets = 10;
             int learningIterations = 60000;
@@ -27,11 +27,11 @@ namespace console
             {
                 Console.WriteLine("----- Run #" + run + "-----");
 
-                //TrainNetwork(network, learningIterations, numSets);
+                TrainNetwork(network, learningIterations, numSets);
 
                 TestNetwork(network);
 
-                //SaveNetwork(network, savePath);
+                SaveNetwork(network, savePath);
             }
 
             Console.WriteLine("Done");
