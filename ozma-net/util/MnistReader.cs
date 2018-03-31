@@ -99,9 +99,9 @@ namespace ozmanet.util
             int label = m_labelReader.ReadByte();
 
             // read img data
-            for (int y = 0; y < m_imgHeight; y++) 
+            for (int x = 0; x < m_imgWidth; x++)
             {
-                for (int x = 0; x < m_imgWidth; x++)
+                for (int y = 0; y < m_imgHeight; y++) 
                 {
                     byte b = m_imgReader.ReadByte();
                     img[x, y] = b;

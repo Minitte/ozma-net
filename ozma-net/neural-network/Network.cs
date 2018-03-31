@@ -28,6 +28,11 @@ namespace ozmanet.neural_network
         private int[] m_layout;
 
         /// <summary>
+        /// Number of data this network has trained with
+        /// </summary>
+        private long m_trainCount;
+
+        /// <summary>
         /// List of layers in the network
         /// </summary>
         private NeuronLinkLayer[] m_layers;
@@ -75,6 +80,22 @@ namespace ozmanet.neural_network
         }
 
         /// <summary>
+        /// Number of data this network has trained with
+        /// </summary>
+        public long TrainCount
+        {
+            get
+            {
+                return m_trainCount;
+            }
+
+            set
+            {
+                m_trainCount = value;
+            }
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="numNeurons">number of neurons per layer, must be atleast 3 layers!</param>
@@ -107,6 +128,8 @@ namespace ozmanet.neural_network
                 Console.WriteLine("Sets are uneven");
                 return;
             }
+
+            m_trainCount += inputs.GetLength(0);
 
             double numSets = inputs.GetLength(0);
             int floatSize = 4;
