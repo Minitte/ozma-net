@@ -8,6 +8,8 @@ namespace ozmanet.util
 {
     public class NetworkLoader
     {
+        private static int VERSION = 2;
+
         private FileStream stream;
         private StreamReader reader;
 
@@ -29,8 +31,19 @@ namespace ozmanet.util
         {
             stream.Seek(0, SeekOrigin.Begin);
 
+            // format version
+            int version = int.Parse(reader.ReadLine());
+
+            if (version != VERSION)
+            {
+                return null;
+            }
+
+            long trainCount = long.Parse(reader.ReadLine());
+
             int[] layout = ReadLayout();
             Network net = new Network(layout);
+            net.TrainCount = trainCount;
 
             ReadWeightsBiases(net);
 

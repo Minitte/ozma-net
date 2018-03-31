@@ -21,6 +21,7 @@ namespace NetworkTest
             int[] layout = { 10, 32, 5 };
             String path = "tmptest.ozmanet";
             Network net1 = new Network(layout);
+            net1.TrainCount = 5437543;
 
             NetworkSaver saver = new NetworkSaver(path);
             saver.Save(net1);
@@ -29,6 +30,8 @@ namespace NetworkTest
             NetworkLoader loader = new NetworkLoader(path);
             Network net2 = loader.Load();
             loader.Dispose();
+
+            Assert.AreEqual(net1.TrainCount, net2.TrainCount);
 
             // test all layers to be the same
             for (int l = 0; l < net1.Layers.Length; l++)
