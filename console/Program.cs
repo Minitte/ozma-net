@@ -12,25 +12,69 @@ namespace console
             int[] layerSettings = { 784, 30, 10 };
             Network network = new Network(layerSettings);
 
-            
-            for (int run = 0; run < 10000; run++)
+            int numSets = 10;
+
+
+            for (int run = 0; run < 1; run++)
             {
                 MnistReader reader = new MnistReader(
                     "../../../../data/digits/training/train-labels.idx1-ubyte",     // path for labels
                     "../../../../data/digits/training/train-images.idx3-ubyte");    // path for imgs
 
                 int iterations = 0;
-                int hit = 0;
-                while (reader.HasNext() && iterations < 15000)
-                {
-                    CharacterImage input = reader.ReadNext();
 
+                while (reader.HasNext() && iterations < 1000)
+                {
+                    iterations++;
+                    float[,] inputSet = new float[numSets, 784];
+                    float[,] expectedSet = new float[numSets, 10];
+
+                    for (int i = 0; i < numSets; i++)
+                    {
+                        CharacterImage input = reader.ReadNext();
+                        byte[] dataB = DataTo1D(input.Data);
+                        float[] dataF = new float[dataB.Length];
+
+                        for (int j = 0; j < dataB.Length; j++)
+                        {
+                            dataF[j] = ((float)dataB[j]) / 255f;
+                        }
+
+                        float[] expected = new float[10];
+                        int value = input.Value - '0';
+                        expected[value] = 1f;
+
+                        Buffer.BlockCopy(dataF, 0, inputSet, i * 4 * inputSet.GetLength(1), 4 * dataF.Length);
+                        Buffer.BlockCopy(expected, 0, expectedSet, i * 4 * expectedSet.GetLength(1), 4 * expected.Length);
+                    }
+
+                    network.Learn(inputSet, expectedSet);
+
+                    Console.Write("\r Learning Hits: " + network.totalHits + " / " + iterations * numSets);
+                    
+                }
+
+                reader.Dispose();
+
+                reader = new MnistReader(
+                    "../../../../data/digits/training/train-labels.idx1-ubyte",     // path for labels
+                    "../../../../data/digits/training/train-images.idx3-ubyte");    // path for imgs
+
+                int hits = 0;
+                iterations = 0;
+                Console.Clear();
+
+                while (reader.HasNext() && iterations < 10000)
+                {
+                    iterations++;
+
+                    CharacterImage input = reader.ReadNext();
                     byte[] dataB = DataTo1D(input.Data);
                     float[] dataF = new float[dataB.Length];
 
-                    for (int i = 0; i < dataB.Length; i++)
+                    for (int j = 0; j < dataB.Length; j++)
                     {
-                        dataF[i] = ((float)dataB[i]) / 255f;
+                        dataF[j] = ((float)dataB[j]) / 255f;
                     }
 
                     float[] expected = new float[10];
@@ -38,55 +82,15 @@ namespace console
                     expected[value] = 1f;
 
                     network.FeedForward(dataF);
-                    network.Backpropagate(expected);
 
-                    Console.Write("\r Cost: " + Math.Round(network.cost) + " Hits: " + hit + " / " + iterations);
-                    iterations++;
-                    if (value == network.actual)
+                    if (network.actual == value)
                     {
-                        hit++;
+                        hits++;
                     }
-                    //Console.WriteLine("Expected: " + value + " ---- Actual: " + network.actual);
-                    //Console.Clear();
-                    //Console.ReadKey();
+
+                    Console.Write("\r Run " + run + ": " + hits + " / " + iterations);
                 }
-
-                reader.Dispose();
             }
-
-            /*
-            while(true)
-            {
-                float[] input = { 1, 0 };
-                float[] expected = { 0, 1 };
-
-                network.FeedForward(input);
-                network.Backpropagate(expected);
-
-                Console.WriteLine("Expected: " + 1 + " ---- Actual: " + network.actual);
-
-                float[] input2 = { 0, 1 };
-                float[] expected2 = { 1, 0 };
-
-                network.FeedForward(input2);
-                network.Backpropagate(expected2);
-
-                Console.WriteLine("Expected: " + 0 + " ---- Actual: " + network.actual);
-
-                float[] input3 = { 1, 1 };
-                float[] expected3 = { 0, 0 };
-
-                network.FeedForward(input3);
-                network.Backpropagate(expected3);
-
-                Console.WriteLine("Expected: " + -1 + " ---- Actual: " + network.actual);
-                Console.ReadKey();
-             }
-            */
-           
-
-                Console.Write("Press any key to end");
-            Console.ReadKey();
         }
 
         static byte[] DataTo1D(byte[,] input)

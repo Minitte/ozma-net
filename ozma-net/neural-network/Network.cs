@@ -11,6 +11,8 @@ namespace ozmanet.neural_network
 
         public double cost;
 
+        public int totalHits;
+
         /// <summary>
         /// List of layers in the network
         /// </summary>
@@ -55,6 +57,87 @@ namespace ozmanet.neural_network
 
             // randomize weights
             RandomizeWeights(10);
+        }
+
+        /**
+         * Feeds forward and backpropagates the sets of inputs and expected outputs.
+         * Weights are adjusted after dividing by the total number of sets
+         */
+        public void Learn(float[,] inputs, float[,] expecteds)
+        {
+            if (inputs.GetLength(0) != expecteds.GetLength(0))
+            {
+                Console.WriteLine("Sets are uneven");
+                return;
+            }
+            //totalHits = 0;
+
+            double numSets = inputs.GetLength(0);
+            int floatSize = 4;
+
+            for (int i = 0; i < inputs.GetLength(0); i++)
+            {
+                float[] input = new float[inputs.GetLength(1)];
+                float[] expected = new float[expecteds.GetLength(1)];
+
+                // Get the current rows
+                Buffer.BlockCopy(inputs, floatSize * inputs.GetLength(1) * i, input, 0, floatSize * inputs.GetLength(1));
+                Buffer.BlockCopy(expecteds, floatSize * expecteds.GetLength(1) * i, expected, 0, floatSize * expecteds.GetLength(1));
+
+                int expectedNum = -2;
+
+                for (int j = 0; j < expected.Length; j++)
+                {
+                    if (expected[j] == 1)
+                    {
+                        expectedNum = j;
+                    }
+                }
+
+                FeedForward(input);
+
+                if (actual == expectedNum)
+                {
+                    totalHits++;
+                }
+
+                Backpropagate(expected);
+            }
+
+            // Temp
+            for (int k = 0; k < m_inputLayer.Neurons.Length; k++)
+            {
+                for (int i = 0; i < m_layers[m_layers.Length - 2].Neurons.Length; i++)
+                {
+                    m_inputLayer.Links[k, i].Weight +=
+                        learningRate * m_inputLayer.Links[k, i].Delta / numSets;
+
+                    m_inputLayer.Links[k, i].Delta = 0.0;
+                }
+            }
+
+            for (int i = 0; i < m_layers[m_layers.Length - 2].Neurons.Length; i++)
+            {
+                for (int j = 0; j < m_outputLayer.Neurons.Length; j++)
+                {
+                    m_layers[m_layers.Length - 2].Links[i, j].Weight +=
+                        learningRate * m_layers[m_layers.Length - 2].Links[i, j].Delta / numSets;
+
+                    m_layers[m_layers.Length - 2].Links[i, j].Delta = 0.0;
+                }
+            }
+
+            for (int i = 0; i < m_outputLayer.Neurons.Length; i++)
+            {
+                m_outputLayer.Neurons[i].Bias += learningRate * m_outputLayer.Neurons[i].Delta / numSets;
+                m_outputLayer.Neurons[i].Delta = 0.0;
+            }
+
+            for (int i = 0; i < m_layers[m_layers.Length - 2].Neurons.Length; i++)
+            {
+                m_layers[m_layers.Length - 2].Neurons[i].Bias += learningRate * m_layers[m_layers.Length - 2].Neurons[i].Delta / numSets;
+                m_layers[m_layers.Length - 2].Neurons[i].Delta = 0.0;
+            }
         }
 
         /**
@@ -128,6 +211,7 @@ namespace ozmanet.neural_network
                 return;
             }
 
+            // Calculate cost and errors
             double[] error = new double[expected.Length];
             cost = 0.0f;
 
@@ -139,6 +223,7 @@ namespace ozmanet.neural_network
 
             double[] errorToNet = new double[expected.Length];
 
+            // Calculate hidden layer to output layer deltas
             for (int i = 0; i < expected.Length; i++)
             {
                 errorToNet[i] = 2.0 * (expected[i] - m_outputLayer.Neurons[i].Out)
@@ -153,6 +238,7 @@ namespace ozmanet.neural_network
                 }
             }
 
+            // Calculate input layer to hidden layer deltas
             for (int j = 0; j < m_layers[m_layers.Length - 2].Neurons.Length; j++)
             {
                 double sum = 0.0;
@@ -166,47 +252,11 @@ namespace ozmanet.neural_network
                     m_inputLayer.Links[k, j].Delta += sum
                         * util.MathF.SigmoidPrimes(m_layers[m_layers.Length - 2].Neurons[j].Net)
                         * m_inputLayer.Neurons[k].Out;
-
-                    
                 }
                 m_layers[m_layers.Length - 2].Neurons[j].Delta += sum * util.MathF.SigmoidPrimes(m_layers[m_layers.Length - 2].Neurons[j].Net);
             }
 
-
-            // Temp
-            for (int k = 0; k < m_inputLayer.Neurons.Length; k++)
-            {
-                for (int i = 0; i < m_layers[m_layers.Length - 2].Neurons.Length; i++)
-                {
-                    m_inputLayer.Links[k, i].Weight +=
-                        learningRate * m_inputLayer.Links[k, i].Delta;
-
-                    m_inputLayer.Links[k, i].Delta = 0.0;
-                }
-            }
-       
-            for (int i = 0; i < m_layers[m_layers.Length - 2].Neurons.Length; i++)
-            {
-                for (int j = 0; j < m_outputLayer.Neurons.Length; j++)
-                {
-                    m_layers[m_layers.Length - 2].Links[i, j].Weight +=
-                        learningRate * m_layers[m_layers.Length - 2].Links[i, j].Delta;
-
-                    m_layers[m_layers.Length - 2].Links[i, j].Delta = 0.0;
-                }
-            }
-
-            for (int i = 0; i < m_outputLayer.Neurons.Length; i++)
-            {
-                m_outputLayer.Neurons[i].Bias += learningRate * m_outputLayer.Neurons[i].Delta;
-                m_outputLayer.Neurons[i].Delta = 0.0;
-            }
-
-            for (int i = 0; i < m_layers[m_layers.Length - 2].Neurons.Length; i++)
-            {
-                m_layers[m_layers.Length - 2].Neurons[i].Bias += learningRate * m_layers[m_layers.Length - 2].Neurons[i].Delta;
-                m_layers[m_layers.Length - 2].Neurons[i].Delta = 0.0;
-            }
+            
 
         }
 
