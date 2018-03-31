@@ -21,6 +21,11 @@ namespace ozmanet.util
             reader = new StreamReader(stream);
         }
 
+        public NetworkLoader(StreamReader reader)
+        {
+            this.reader = reader;
+        }
+
         /// <summary>
         /// Reads the file and creates a network based on the values
         /// </summary>
