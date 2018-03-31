@@ -15,6 +15,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Ink;
 
+using ozmanet.neural_network;
+using ozmanet.util;
+
 namespace wpf_ozma_net
 {
     /// <summary>
@@ -25,6 +28,7 @@ namespace wpf_ozma_net
 
         private Stack<StrokeAction> m_undoStack;
         private Stack<StrokeAction> m_redoStack;
+        private Network m_network;
 
         public MainWindow()
         {
@@ -32,6 +36,14 @@ namespace wpf_ozma_net
 
             m_undoStack = new Stack<StrokeAction>();
             m_redoStack = new Stack<StrokeAction>();
+        }
+
+        private void InitNetwork()
+        {
+            // init network
+            NetworkLoader loader = new NetworkLoader("digit-net.ozmanet");
+            m_network = loader.Load();
+            loader.Dispose();
         }
 
         /// <summary>
@@ -96,6 +108,25 @@ namespace wpf_ozma_net
             TransformedBitmap res = new TransformedBitmap(img, s);
 
             NetworkImage.Source = res;
+
+            // ask network
+            if (m_network == null)
+            {
+                InitNetwork();
+            }
+
+            float[] input = ConvertToNetworkInput(res);
+
+            int result = m_network.FeedForward(input);
+
+            if (result == -2)
+            {
+                NetworkResultText.Text = "???";
+            }
+            else
+            {
+                NetworkResultText.Text = result + "!";
+            }
         }
 
         /// <summary>
@@ -103,30 +134,29 @@ namespace wpf_ozma_net
         /// </summary>
         /// <param name="img"></param>
         /// <returns></returns>
-        private byte[,] ConvertToNetworkInput(TransformedBitmap img)
+        private float[] ConvertToNetworkInput(TransformedBitmap img)
         {
             int w = (int)(img.Width + 0.5);
             int h = (int)(img.Height + 0.5);
-            byte[,] data = new byte[w, h];
+            float[] data = new float[w * h];
             int[] pxBuffer = new int[w * h];
 
             // copy argb pixels to buffer
             img.CopyPixels(pxBuffer, w * 4, 0);
 
             // for all pixels in buffer
-            for (int y = 0; y < h; y++)
+            for (int i = 0; i < h * w; i++)
             {
-                for (int x = 0; x < w; x++)
-                {
-                    // extract rgb values
-                    int px = pxBuffer[(y * w) + x];
-                    int r = px & 0x00ff0000;
-                    int g = px & 0x0000ff00;
-                    int b = px & 0x000000ff;
+                
+                // extract rgb values
+                int px = pxBuffer[i];
+                int r = px & 0x00ff0000;
+                int g = px & 0x0000ff00;
+                int b = px & 0x000000ff;
 
-                    // calculate y value
-                    data[x, y] = (byte)((0.299 * r) + (0.567 * g) + (0.114 * b));
-                }
+                // calculate y value
+                data[i] = ((0.299f * r) + (0.567f * g) + (0.114f * b)) / 255f;
+                
             }
 
             return data;
