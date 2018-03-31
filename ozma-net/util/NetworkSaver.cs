@@ -6,12 +6,12 @@ using ozmanet.neural_network;
 
 namespace ozmanet.util
 {
-    class NetworkSaver
+    public class NetworkSaver
     {
 
         StreamWriter writer;
 
-        private NetworkSaver(String path)
+        public NetworkSaver(String path)
         {
             writer = new StreamWriter(new FileStream(path, FileMode.OpenOrCreate));
         }

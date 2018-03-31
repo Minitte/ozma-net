@@ -6,7 +6,7 @@ using ozmanet.neural_network;
 
 namespace ozmanet.util
 {
-    class NetworkLoader
+    public class NetworkLoader
     {
         private FileStream stream;
         private StreamReader reader;
