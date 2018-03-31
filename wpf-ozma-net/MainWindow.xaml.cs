@@ -100,10 +100,21 @@ namespace wpf_ozma_net
             ScaleTransform s = new ScaleTransform(0.1, 0.1);
 
             TransformedBitmap res = new TransformedBitmap(img, s);
-            
-            NetworkImage.Source = res;
 
-            float[] input = ConvertToNetworkInput(res);
+            RotateTransform r = new RotateTransform(-270);
+            ScaleTransform flip = new ScaleTransform(-1, 1);
+
+            TransformGroup transGroup = new TransformGroup();
+            transGroup.Children.Add(s);
+            transGroup.Children.Add(r);
+            transGroup.Children.Add(flip);
+
+            // this 1 is for the network
+            TransformedBitmap rot = new TransformedBitmap(img, transGroup);
+
+            NetworkImage.Source = rot;
+
+            float[] input = ConvertToNetworkInput(rot);
             Console.WriteLine("============================");
             Console.Write(ToStringArt(input));
             Console.WriteLine("============================");
@@ -178,6 +189,7 @@ namespace wpf_ozma_net
         public string ToStringArt(float[] pixels)
         {
             string s = "";
+
             for (int i = 0; i < 28; ++i)
             {
                 for (int j = 0; j < 28; ++j)
