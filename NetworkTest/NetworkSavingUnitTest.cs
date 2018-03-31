@@ -44,15 +44,18 @@ namespace NetworkTest
                     Assert.AreEqual(layer1.Neurons[n].Bias, layer2.Neurons[n].Bias);
                 }
 
-                Assert.AreEqual(layer1.Links.GetLength(0), layer2.Links.GetLength(0));
-                Assert.AreEqual(layer1.Links.GetLength(1), layer2.Links.GetLength(1));
-
                 // all links
-                for (int x = 0; x < layer1.Links.GetLength(0); x++)
+                if (l != net2.Layers.Length - 1)
                 {
-                    for (int y = 0; y < layer2.Links.GetLength(1); y++)
+                    Assert.AreEqual(layer1.Links.GetLength(0), layer2.Links.GetLength(0));
+                    Assert.AreEqual(layer1.Links.GetLength(1), layer2.Links.GetLength(1));
+
+                    for (int x = 0; x < layer1.Links.GetLength(0); x++)
                     {
-                        Assert.Equals(layer1.Links[x, y].Weight, layer2.Links[x, y].Weight);
+                        for (int y = 0; y < layer2.Links.GetLength(1); y++)
+                        {
+                            Assert.AreEqual(layer1.Links[x, y].Weight, layer2.Links[x, y].Weight, 0.000000001, String.Format("x:{0} y:{1}", x, y));
+                        }
                     }
                 }
             }

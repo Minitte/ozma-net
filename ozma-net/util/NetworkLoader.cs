@@ -62,8 +62,10 @@ namespace ozmanet.util
         /// <param name="net"></param>
         private void ReadWeightsBiases(Network net)
         {
-            foreach (NeuronLinkLayer layer in net.Layers)
+            for (int l = 0; l < net.Layers.Length; l++)
             {
+                NeuronLinkLayer layer = net.Layers[l];
+
                 // all neurons
                 foreach (Neuron n in layer.Neurons)
                 {
@@ -71,11 +73,14 @@ namespace ozmanet.util
                 }
 
                 // all links
-                for (int x = 0; x < layer.Links.GetLength(0); x++)
+                if (l != net.Layers.Length - 1)
                 {
-                    for (int y = 0; y < layer.Links.GetLength(1); y++)
+                    for (int x = 0; x < layer.Links.GetLength(0); x++)
                     {
-                        layer.Links[x, y].Weight = double.Parse(reader.ReadLine());
+                        for (int y = 0; y < layer.Links.GetLength(1); y++)
+                        {
+                            layer.Links[x, y].Weight = double.Parse(reader.ReadLine());
+                        }
                     }
                 }
             }
