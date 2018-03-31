@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MnistReaderUnitTest.cs" />
+    <Compile Include="NetworkSavingUnitTest.cs" />
     <Compile Include="NetworkUnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
