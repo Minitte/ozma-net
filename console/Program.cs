@@ -9,14 +9,21 @@ namespace console
     {
         static void Main(string[] args)
         {
-            int[] layerSettings = { 784, 30, 10 };
-            Network network = new Network(layerSettings);
+            int[] layersettings = { 784, 30, 10 };
+            Network network = new Network(layersettings);
+
+            String savePath = "digit-net.ozmanet";
+            //NetworkLoader loader = new NetworkLoader(savePath);
+            //Network network = loader.Load();
+            //loader.Dispose();
 
             int numSets = 10;
             int learningIterations = 60000;
 
-            for (int run = 0; run < 1; run++)
+            for (int run = 0; run < 4; run++)
             {
+
+                #region test run
                 Console.WriteLine("----- Run #" + run + "-----");
                 network.TotalHits = 0;
 
@@ -58,16 +65,19 @@ namespace console
                 }
 
                 reader.Dispose();
+                #endregion
+
+                #region test
 
                 reader = new MnistReader(
-                    "../data/digits/training/train-labels.idx1-ubyte",     // path for labels
-                    "../data/digits/training/train-images.idx3-ubyte");    // path for imgs
+                    "../data/digits/test/t10k-labels.idx1-ubyte",     // path for labels
+                    "../data/digits/test/t10k-images.idx3-ubyte");    // path for imgs
 
                 int hits = 0;
                 iterations = 0;
                 Console.WriteLine();
 
-                while (reader.HasNext() && iterations < learningIterations * numSets)
+                while (reader.HasNext())
                 {
                     iterations++;
 
@@ -92,14 +102,19 @@ namespace console
                     Console.Write("\r Hits: " + hits + " / " + iterations);
                 }
 
+                reader.Dispose();
+
                 Console.WriteLine();
+                #endregion
+
+                #region check point
+                Console.WriteLine("Saving to " + savePath + " ...");
+
+                NetworkSaver saver = new NetworkSaver(savePath);
+                saver.Save(network);
+                saver.Dispose();
+                #endregion
             }
-
-            String savePath = "digit-net.ozmanet";
-            Console.WriteLine("Saving to " + savePath + " ...");
-
-            NetworkSaver saver = new NetworkSaver(savePath);
-            saver.Save(network);
 
             Console.WriteLine("Done");
             Console.ReadKey();
