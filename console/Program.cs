@@ -13,7 +13,7 @@ namespace console
             Network network = new Network(layerSettings);
 
             int numSets = 10;
-            int learningIterations = 500;
+            int learningIterations = 60000;
 
             for (int run = 0; run < 1; run++)
             {
@@ -21,8 +21,8 @@ namespace console
                 network.TotalHits = 0;
 
                 MnistReader reader = new MnistReader(
-                    "../../../../data/digits/training/train-labels.idx1-ubyte",     // path for labels
-                    "../../../../data/digits/training/train-images.idx3-ubyte");    // path for imgs
+                    "../data/digits/training/train-labels.idx1-ubyte",     // path for labels
+                    "../data/digits/training/train-images.idx3-ubyte");    // path for imgs
 
                 int iterations = 0;
 
@@ -60,8 +60,8 @@ namespace console
                 reader.Dispose();
 
                 reader = new MnistReader(
-                    "../../../../data/digits/training/train-labels.idx1-ubyte",     // path for labels
-                    "../../../../data/digits/training/train-images.idx3-ubyte");    // path for imgs
+                    "../data/digits/training/train-labels.idx1-ubyte",     // path for labels
+                    "../data/digits/training/train-images.idx3-ubyte");    // path for imgs
 
                 int hits = 0;
                 iterations = 0;
@@ -94,6 +94,12 @@ namespace console
 
                 Console.WriteLine();
             }
+
+            String savePath = "digit-net.ozmanet";
+            Console.WriteLine("Saving to " + savePath + " ...");
+
+            NetworkSaver saver = new NetworkSaver(savePath);
+            saver.Save(network);
 
             Console.WriteLine("Done");
             Console.ReadKey();
