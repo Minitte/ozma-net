@@ -6,4 +6,10 @@
     <AssemblyName>ozmanet</AssemblyName>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="System.Threading.Tasks.Parallel">
+      <HintPath>..\..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.0.0\ref\netcoreapp2.0\System.Threading.Tasks.Parallel.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

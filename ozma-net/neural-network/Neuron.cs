@@ -12,14 +12,18 @@ namespace ozmanet.neural_network
         /// <summary>
         /// an incoming value held by the neuron
         /// </summary>
-        private float net_value;
+        private double net_value;
 
         /// <summary>
         /// an outgoing value held by the neuron
         /// </summary>
-        private float out_value;
+        private double out_value;
 
-        public float Net
+        private double bias;
+
+        private double delta;
+
+        public double Net
         {
             get
             {
@@ -32,7 +36,7 @@ namespace ozmanet.neural_network
             }
         }
 
-        public float Out
+        public double Out
         {
             get
             {
@@ -45,6 +49,10 @@ namespace ozmanet.neural_network
             }
         }
 
+        public double Bias { get { return bias; } set { bias = value; } }
+
+        public double Delta { get { return delta; } set { delta = value; } }
+
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -56,8 +64,9 @@ namespace ozmanet.neural_network
          * Updates the out value of this neuron.
          * @return the out value
          */
-        public float UpdateOut()
+        public double UpdateOut()
         {
+            net_value = net_value + bias;
             out_value = util.MathF.Sigmoid(net_value);
             return out_value;
         }
