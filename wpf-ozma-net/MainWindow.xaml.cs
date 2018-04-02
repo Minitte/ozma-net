@@ -185,6 +185,11 @@ namespace wpf_ozma_net
             return data;
         }
 
+        /// <summary>
+        /// Converts the pixels into a string for console use
+        /// </summary>
+        /// <param name="pixels"></param>
+        /// <returns></returns>
         public string ToStringArt(float[] pixels)
         {
             string s = "";
@@ -337,6 +342,11 @@ namespace wpf_ozma_net
             UpdateNetworkImage();
         }
 
+        /// <summary>
+        /// Button click event for loading in a network
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnLoadNetworkEvent(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
@@ -352,6 +362,10 @@ namespace wpf_ozma_net
             UpdateNetworkImage();
         }
 
+        /// <summary>
+        /// Loads the network from a file
+        /// </summary>
+        /// <param name="path"></param>
         private void LoadNetwork(String path)
         {
             // init network
@@ -366,6 +380,11 @@ namespace wpf_ozma_net
             loader.Dispose();
         }
 
+        /// <summary>
+        /// Saves the image as a png to the give path
+        /// </summary>
+        /// <param name="img"></param>
+        /// <param name="filePath"></param>
         private void SaveBitmapAsPNG(BitmapSource img, String filePath)
         {
             using (var fileStream = new FileStream(filePath, FileMode.Create))
@@ -376,6 +395,11 @@ namespace wpf_ozma_net
             }
         }
 
+        /// <summary>
+        /// Save button click event 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnSaveNetworkImgEvent(object sender, RoutedEventArgs e)
         {
             SaveFileDialog dialog = new SaveFileDialog();
@@ -399,6 +423,11 @@ namespace wpf_ozma_net
             }
         }
 
+        /// <summary>
+        /// drawing event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DrawingMouseDownEvent(object sender, MouseButtonEventArgs e)
         {
             if (m_network != null)
