@@ -15,6 +15,10 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Ink;
 
+using ozmanet.neural_network;
+using ozmanet.util;
+using Microsoft.Win32;
+
 namespace wpf_ozma_net
 {
     /// <summary>
@@ -25,6 +29,7 @@ namespace wpf_ozma_net
 
         private Stack<StrokeAction> m_undoStack;
         private Stack<StrokeAction> m_redoStack;
+        private Network m_network;
 
         public MainWindow()
         {
@@ -32,6 +37,8 @@ namespace wpf_ozma_net
 
             m_undoStack = new Stack<StrokeAction>();
             m_redoStack = new Stack<StrokeAction>();
+
+            DrawingCanvas.AddHandler(InkCanvas.MouseDownEvent, new MouseButtonEventHandler(DrawingMouseDownEvent), true);
         }
 
         /// <summary>
@@ -89,13 +96,44 @@ namespace wpf_ozma_net
             byte[] data = DrawingToBitmap();
 
             BitmapImage img = ToImage(data);
-            WriteableBitmap modImg = new WriteableBitmap(img);
 
             ScaleTransform s = new ScaleTransform(0.1, 0.1);
 
             TransformedBitmap res = new TransformedBitmap(img, s);
 
+            //RotateTransform r = new RotateTransform(-270);
+            //ScaleTransform flip = new ScaleTransform(-1, 1);
+
+            //TransformGroup transGroup = new TransformGroup();
+            //transGroup.Children.Add(s);
+            //transGroup.Children.Add(r);
+            //transGroup.Children.Add(flip);
+
+            //TransformedBitmap rot = new TransformedBitmap(img, transGroup);
+
             NetworkImage.Source = res;
+
+            float[] input = ConvertToNetworkInput(res);
+            Console.WriteLine("============================");
+            Console.Write(ToStringArt(input));
+            Console.WriteLine("============================");
+
+            // ask network
+            if (m_network == null)
+            {
+                return;
+            }
+
+            int result = m_network.FeedForward(input);
+
+            if (result == -2)
+            {
+                NetworkResultText.Text = "???";
+            }
+            else
+            {
+                NetworkResultText.Text = result + "!";
+            }
         }
 
         /// <summary>
@@ -103,34 +141,74 @@ namespace wpf_ozma_net
         /// </summary>
         /// <param name="img"></param>
         /// <returns></returns>
-        private byte[,] ConvertToNetworkInput(TransformedBitmap img)
+        private float[] ConvertToNetworkInput(TransformedBitmap img)
         {
             int w = (int)(img.Width + 0.5);
             int h = (int)(img.Height + 0.5);
-            byte[,] data = new byte[w, h];
+            float[] data = new float[w * h];
             int[] pxBuffer = new int[w * h];
 
+            int stride = ((img.PixelWidth * img.Format.BitsPerPixel) + 7) / 8;
+
             // copy argb pixels to buffer
-            img.CopyPixels(pxBuffer, w * 4, 0);
+            img.CopyPixels(pxBuffer, stride, 0);
 
             // for all pixels in buffer
-            for (int y = 0; y < h; y++)
+            for (int i = 0; i < h * w; i++)
             {
-                for (int x = 0; x < w; x++)
-                {
-                    // extract rgb values
-                    int px = pxBuffer[(y * w) + x];
-                    int r = px & 0x00ff0000;
-                    int g = px & 0x0000ff00;
-                    int b = px & 0x000000ff;
+                
+                // extract rgb values
+                int px = pxBuffer[i];
+                int r = px & 0x00ff0000;
+                r = r >> 16;
+                r = r ^ 255;
+                int g = px & 0x0000ff00;
+                g = g >> 8;
+                g = g ^ 255;
+                int b = px & 0x000000ff;
+                b = b ^ 255;
 
-                    // calculate y value
-                    data[x, y] = (byte)((0.299 * r) + (0.567 * g) + (0.114 * b));
+                // calculate y value
+                //data[i] = ((0.299f * r) + (0.567f * g) + (0.114f * b)) / 255f;
+
+                // alt, gray average
+                data[i] = ((r + g + b) / 3f) / 255f;
+
+                // darkening
+                if (data[i] != 0)
+                {
+                    data[i] *= 1.5f;
+                    data[i] = data[i] > 1.0f ? 1.0f : data[i];
                 }
             }
 
             return data;
         }
+
+        /// <summary>
+        /// Converts the pixels into a string for console use
+        /// </summary>
+        /// <param name="pixels"></param>
+        /// <returns></returns>
+        public string ToStringArt(float[] pixels)
+        {
+            string s = "";
+
+            for (int i = 0; i < 28; ++i)
+            {
+                for (int j = 0; j < 28; ++j)
+                {
+                    if (pixels[(i * 28) + j] == 0)
+                        s += " "; // white
+                    else if (pixels[(i * 28) + j] > 0.9)
+                        s += "O"; // black
+                    else
+                        s += "."; // gray
+                }
+                s += "\n";
+            }
+            return s;
+        } // ToString
 
         /// <summary>
         /// Undo last action
@@ -212,6 +290,7 @@ namespace wpf_ozma_net
         private void BtnUndoEvent(object sender, RoutedEventArgs e)
         {
             UndoStroke();
+            UpdateNetworkImage();
         }
 
         /// <summary>
@@ -222,6 +301,7 @@ namespace wpf_ozma_net
         private void BtnRedoEvent(object sender, RoutedEventArgs e)
         {
             RedoStroke();
+            UpdateNetworkImage();
         }
 
         /// <summary>
@@ -259,6 +339,101 @@ namespace wpf_ozma_net
             m_undoStack.Push(new StrokeAction(strokeList, false));
 
             DrawingCanvas.Strokes.Clear();
+            UpdateNetworkImage();
+        }
+
+        /// <summary>
+        /// Button click event for loading in a network
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnLoadNetworkEvent(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "Ozma Network (*.ozmanet)|*.ozmanet";
+            dialog.FilterIndex = 1;
+            dialog.RestoreDirectory = true;
+
+            if (dialog.ShowDialog() == true)
+            {
+                LoadNetwork(dialog.FileName);
+            }
+
+            UpdateNetworkImage();
+        }
+
+        /// <summary>
+        /// Loads the network from a file
+        /// </summary>
+        /// <param name="path"></param>
+        private void LoadNetwork(String path)
+        {
+            // init network
+            //FileStream stream = new FileStream(path, FileMode.Open);
+            //StreamReader reader = new StreamReader(stream);
+
+            NetworkLoader loader = new NetworkLoader(path);
+            m_network = loader.Load();
+
+            //reader.Close();
+            //stream.Close();
+            loader.Dispose();
+        }
+
+        /// <summary>
+        /// Saves the image as a png to the give path
+        /// </summary>
+        /// <param name="img"></param>
+        /// <param name="filePath"></param>
+        private void SaveBitmapAsPNG(BitmapSource img, String filePath)
+        {
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                BitmapEncoder encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(img));
+                encoder.Save(fileStream);
+            }
+        }
+
+        /// <summary>
+        /// Save button click event 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtnSaveNetworkImgEvent(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.Filter = "PNG (*.png)|*.png";
+            dialog.FilterIndex = 1;
+            dialog.RestoreDirectory = true;
+
+            if (dialog.ShowDialog() == true)
+            {
+
+                byte[] data = DrawingToBitmap();
+
+                BitmapImage img = ToImage(data);
+                WriteableBitmap modImg = new WriteableBitmap(img);
+
+                ScaleTransform s = new ScaleTransform(0.1, 0.1);
+
+                TransformedBitmap res = new TransformedBitmap(img, s);
+
+                SaveBitmapAsPNG(res, dialog.FileName);
+            }
+        }
+
+        /// <summary>
+        /// drawing event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DrawingMouseDownEvent(object sender, MouseButtonEventArgs e)
+        {
+            if (m_network != null)
+            {
+                NetworkResultText.Text = "...";
+            }
         }
     }
 }
