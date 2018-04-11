@@ -11,24 +11,24 @@ namespace console
         static int alterateFile = 1;
 
         // paths
-        static string inputPath = "caltech101-image-data";
-        static string labelPath = "caltech101-image-data-labels";
+        static string inputPath = "caltech101-img-data-100x67-9000-shuffled";
+        static string labelPath = "caltech101-img-data-100x67-9000-shuffled-labels";
         static string savePath = "digit-net.ozmanet";
 
         static bool loadExisting = false;
 
         // layout
-        static int inputLayer = 784;
-        static int outputLayer = 10;
+        static int inputLayer = 100 * 67;
+        static int outputLayer = 102;
 
         // learning settings
-        static int numRuns = 1;
-        static int numSets = 10;
+        static int numRuns = 3;
+        static int numSets = 100;
         static int learningIterations = 1000;
 
         static void Main(string[] args)
         {
-            int[] layersettings = { inputLayer, 200, outputLayer };
+            int[] layersettings = { inputLayer, 50, outputLayer };
             Network network = null;
 
             if (loadExisting)
@@ -85,8 +85,8 @@ namespace console
                         dataF[j] = ((float)dataB[j]) / 255f;
                     }
 
-                    float[] expected = new float[10];
-                    int value = input.Value - '0';
+                    float[] expected = new float[outputLayer];
+                    int value = int.Parse(input.Value);
                     expected[value] = 1f;
 
                     Buffer.BlockCopy(dataF, 0, inputSet, i * 4 * inputSet.GetLength(1), 4 * dataF.Length);
@@ -126,7 +126,7 @@ namespace console
                 }
 
                 float[] expected = new float[10];
-                int value = input.Value - '0';
+                int value = int.Parse(input.Value);
                 expected[value] = 1f;
 
                 if (network.FeedForward(dataF) == value)
