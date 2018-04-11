@@ -62,21 +62,21 @@ namespace mnist_data_creator
                         int height = 0;
                         int max = 0;
 
-                        Console.WriteLine("Image will be resize to fit the width and height..");
-                        Console.WriteLine("Width?");
+                        Console.WriteLine("\nImage will be resize to fit the width and height..");
+                        Console.WriteLine("\nWidth?");
                         if (!int.TryParse(Console.ReadLine(), out width)) {
                             Console.WriteLine("Could not read that number!");
                             break;
                         }
 
-                        Console.WriteLine("Height?");
+                        Console.WriteLine("\nHeight?");
                         if (!int.TryParse(Console.ReadLine(), out height))
                         {
                             Console.WriteLine("Could not read that number!");
                             break;
                         }
 
-                        Console.WriteLine("Max images per folder? (0 for unlimited)");
+                        Console.WriteLine("\nMax images per folder? (0 for unlimited)");
                         if (!int.TryParse(Console.ReadLine(), out max))
                         {
                             Console.WriteLine("Could not read that number!");
@@ -84,7 +84,7 @@ namespace mnist_data_creator
                         }
 
                         // output path
-                        Console.WriteLine("Enter output path");
+                        Console.WriteLine("\nEnter output path");
                         string outPath = Console.ReadLine();
 
                         FolderToMnist(dirPath, outPath, width, height, max);
@@ -137,7 +137,7 @@ namespace mnist_data_creator
                 max = int.MaxValue - 1;
             }
 
-            Console.WriteLine("Searching for images...");
+            Console.WriteLine("\nSearching for images...");
 
             foreach (string f in folders)
             {
