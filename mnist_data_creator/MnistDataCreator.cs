@@ -101,6 +101,21 @@ namespace mnist_data_creator
                         FolderToMnist(dirPath, outPath, width, height, max, amt);
                         break;
 
+                    case 3:
+                        Console.WriteLine("Enter input folder path.");
+                        string testPath = Console.ReadLine();
+                        
+                        if (!File.Exists(testPath))
+                        {
+                            Console.WriteLine("Can't find the item!");
+                            Console.WriteLine(Directory.GetCurrentDirectory() + "\\" + testPath);
+                            break;
+                        }
+
+                        TestData(testPath);
+
+                        break;
+
                     case 6:
                         Console.WriteLine("Ending...");
                         running = false;
@@ -123,6 +138,7 @@ namespace mnist_data_creator
         {
             Console.WriteLine("===============");
             Console.WriteLine("1 - from Folder");
+            Console.WriteLine("3 - test data");
             Console.WriteLine("6 - exit");
             Console.WriteLine("dir - list dirs");
             Console.WriteLine("===============");
@@ -246,6 +262,39 @@ namespace mnist_data_creator
             Console.WriteLine("Done");
         }
 
+        static void TestData(string filePath)
+        {
+            FileStream fs = new FileStream(filePath, FileMode.Open);
+
+            BinaryReader br = new BinaryReader(fs);
+
+            br.ReadInt32();
+            int count = ReadBigInt32(br);
+            int width = ReadBigInt32(br);
+            int height = ReadBigInt32(br);
+
+            int[,] img = new int[width, height];
+            Bitmap bmp = new Bitmap(width, height);
+            // read img
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    byte b = br.ReadByte();
+                    
+                    img[x, y] = 0xff + (b << 16) + (b << 8) + (b);
+
+                    Color c = Color.FromArgb(img[x, y]);
+                    bmp.SetPixel(x, y, c);
+                }
+            }
+            
+            bmp.Save("test.bmp");
+
+            br.Close();
+            fs.Close();
+        }
+
         static byte[,] BitmapToByteArr(Bitmap img)
         {
             byte[,] data = new byte[img.Width, img.Height];
@@ -310,5 +359,19 @@ namespace mnist_data_creator
                 list[n] = value;
             }
         }
+
+        /// <summary>
+        /// Reads the next 4 byte and converts to Big Endian format
+        /// </summary>
+        /// <param name="br"></param>
+        /// <returns></returns>
+        private static int ReadBigInt32(BinaryReader br)
+        {
+            var bytes = br.ReadBytes(sizeof(Int32));
+            if (BitConverter.IsLittleEndian)
+                Array.Reverse(bytes);
+            return BitConverter.ToInt32(bytes, 0);
+        }
+
     }
 }
