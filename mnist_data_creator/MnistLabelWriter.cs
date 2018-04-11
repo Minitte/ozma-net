@@ -4,7 +4,7 @@ using System.Text;
 
 using System.IO;
 
-namespace ozmanet.util
+namespace mnist_data_creator
 {
     public class MnistLabelWriter
     {
