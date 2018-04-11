@@ -174,7 +174,7 @@ namespace mnist_data_creator
                         break;
                     }
                     countTotal++;
-                    Console.Write("\rFound " + count + " in " + label + "(" + labelIndex + ") resized=" + resizeCount + " images");
+                    Console.Write("\rFound " + count + " in " + label + "(" + labelIndex + "), resized " + resizeCount + " images");
 
                     // load and hold
                     Image img = Image.FromFile(i);
@@ -203,6 +203,13 @@ namespace mnist_data_creator
 
             // begin writing data
             int numData = amt < int.MaxValue - 2 ? amt : imgList.Count;
+
+            if (width == 0)
+            {
+                width = imgList[0].Image.GetLength(0);
+                height = imgList[0].Image.GetLength(1);
+            }
+
             MnistImageWriter imgWriter = new MnistImageWriter(outPath, (uint)numData, (uint)width, (uint)height);
             MnistLabelWriter labelWriter = new MnistLabelWriter(outPath + "-labels", (uint)numData);
 
