@@ -24,6 +24,16 @@ namespace mnist_data_creator
 
                 int choice = -1;
 
+                if (input.Equals("dir"))
+                {
+                    string[] dirs = Directory.GetDirectories(Directory.GetCurrentDirectory());
+                    foreach (string d in dirs)
+                    {
+                        Console.WriteLine(d);
+                    }
+                    continue;
+                }
+
                 bool correct = int.TryParse(input, out choice);
 
                 if (!correct)
@@ -95,6 +105,7 @@ namespace mnist_data_creator
             Console.WriteLine("===============");
             Console.WriteLine("1 - from Folder");
             Console.WriteLine("6 - exit");
+            Console.WriteLine("dir - list dirs");
             Console.WriteLine("===============");
         }
 
