@@ -109,7 +109,7 @@ namespace ozmanet.util
             }
 
             m_readIndex++;
-            return new CharacterImage(img, Convert.ToChar("" + label));
+            return new CharacterImage(img, "" + label);
         }
 
         /// <summary>
