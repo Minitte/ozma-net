@@ -209,7 +209,7 @@ namespace mnist_data_creator
             }
             Console.WriteLine();
 
-            if (amt > 0)
+            if (amt > 0 && amt < int.MaxValue - 2)
             {
                 Console.WriteLine((countTotal - amt) + " images was skipped due to user defined limit!");
             }
