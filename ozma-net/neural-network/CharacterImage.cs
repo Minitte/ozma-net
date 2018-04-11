@@ -7,7 +7,7 @@ namespace ozmanet.neural_network
     public class CharacterImage
     {
         private byte[,] m_data;
-        private char m_value;
+        private string m_value;
 
         /// <summary>
         /// image data
@@ -23,7 +23,7 @@ namespace ozmanet.neural_network
         /// <summary>
         /// char of the image (what the image represents)
         /// </summary>
-        public char Value
+        public string Value
         {
             get
             {
@@ -36,7 +36,7 @@ namespace ozmanet.neural_network
         /// </summary>
         /// <param name="data">data of an image</param>
         /// <param name="value">value of the image</param>
-        public CharacterImage(byte[,] data, char value)
+        public CharacterImage(byte[,] data, string value)
         {
             m_data = data;
             m_value = value;

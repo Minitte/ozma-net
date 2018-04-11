@@ -7,70 +7,75 @@ namespace console
 {
     class Program
     {
+        // safety alternating path name
+        static int alterateFile = 1;
+
+        // paths
+        static string inputPath = "coil-20-proc-1440-128x128";
+        static string labelPath = "coil-20-proc-1440-128x128-labels";
+        static string savePath = "digit-net.ozmanet";
+
+        static bool loadExisting = false;
+
+        // layout
+        static int inputLayer = 128*128;
+        static int outputLayer = 20;
+
+        // learning settings
+        static int numRuns = 3;
+        static int numSets = 144;
+        static int learningIterations = 1000;
+
         static void Main(string[] args)
         {
-            int[] layerSettings = { 784, 30, 10 };
-            Network network = new Network(layerSettings);
+            int[] layersettings = { inputLayer, 65, outputLayer };
+            Network network = null;
 
-            int numSets = 10;
-            int learningIterations = 500;
+            if (loadExisting)
+            {
+                NetworkLoader loader = new NetworkLoader(savePath);
+                network = loader.Load();
+                loader.Dispose();
+            }
+            else
+            {
+                network = new Network(layersettings);
+            }
 
-            for (int run = 0; run < 1; run++)
+            for (int run = 0; run < numRuns; run++)
             {
                 Console.WriteLine("----- Run #" + run + "-----");
-                network.TotalHits = 0;
 
-                MnistReader reader = new MnistReader(
-                    "../../../../data/digits/training/train-labels.idx1-ubyte",     // path for labels
-                    "../../../../data/digits/training/train-images.idx3-ubyte");    // path for imgs
+                TrainNetwork(network, learningIterations, numSets);
 
-                int iterations = 0;
+                TestNetwork(network);
 
-                while (reader.HasNext() && iterations < learningIterations)
+                SaveNetwork(network, savePath);
+            }
+
+            Console.WriteLine("Done");
+            Console.ReadKey();
+        }
+
+        static void TrainNetwork(Network network, int learningIterations, int numSets)
+        {
+            
+            network.TotalHits = 0;
+
+            MnistReader reader = new MnistReader(
+                labelPath,     // path for labels
+                inputPath);    // path for imgs
+
+            int iterations = 0;
+
+            while (reader.HasNext() && iterations < learningIterations)
+            {
+                iterations++;
+                float[,] inputSet = new float[numSets, inputLayer];
+                float[,] expectedSet = new float[numSets, outputLayer];
+
+                for (int i = 0; i < numSets; i++)
                 {
-                    iterations++;
-                    float[,] inputSet = new float[numSets, 784];
-                    float[,] expectedSet = new float[numSets, 10];
-
-                    for (int i = 0; i < numSets; i++)
-                    {
-                        CharacterImage input = reader.ReadNext();
-                        byte[] dataB = DataTo1D(input.Data);
-                        float[] dataF = new float[dataB.Length];
-
-                        for (int j = 0; j < dataB.Length; j++)
-                        {
-                            dataF[j] = ((float)dataB[j]) / 255f;
-                        }
-
-                        float[] expected = new float[10];
-                        int value = input.Value - '0';
-                        expected[value] = 1f;
-
-                        Buffer.BlockCopy(dataF, 0, inputSet, i * 4 * inputSet.GetLength(1), 4 * dataF.Length);
-                        Buffer.BlockCopy(expected, 0, expectedSet, i * 4 * expectedSet.GetLength(1), 4 * expected.Length);
-                    }
-
-                    network.Learn(inputSet, expectedSet);
-
-                    Console.Write("\r Learning Hits: " + network.TotalHits + " / " + iterations * numSets);
-                    
-                }
-
-                reader.Dispose();
-
-                reader = new MnistReader(
-                    "../../../../data/digits/training/train-labels.idx1-ubyte",     // path for labels
-                    "../../../../data/digits/training/train-images.idx3-ubyte");    // path for imgs
-
-                int hits = 0;
-                iterations = 0;
-                Console.WriteLine();
-
-                while (reader.HasNext() && iterations < learningIterations * numSets)
-                {
-                    iterations++;
-
                     CharacterImage input = reader.ReadNext();
                     byte[] dataB = DataTo1D(input.Data);
                     float[] dataF = new float[dataB.Length];
@@ -80,23 +85,72 @@ namespace console
                         dataF[j] = ((float)dataB[j]) / 255f;
                     }
 
-                    float[] expected = new float[10];
-                    int value = input.Value - '0';
+                    float[] expected = new float[outputLayer];
+                    int value = int.Parse(input.Value);
                     expected[value] = 1f;
 
-                    if (network.FeedForward(dataF) == value)
-                    {
-                        hits++;
-                    }
-
-                    Console.Write("\r Hits: " + hits + " / " + iterations);
+                    Buffer.BlockCopy(dataF, 0, inputSet, i * 4 * inputSet.GetLength(1), 4 * dataF.Length);
+                    Buffer.BlockCopy(expected, 0, expectedSet, i * 4 * expectedSet.GetLength(1), 4 * expected.Length);
                 }
 
-                Console.WriteLine();
+                network.Learn(inputSet, expectedSet);
+
+                Console.Write("\r Learning Hits: " + network.TotalHits + " / " + iterations * numSets + " (" + (int)(((float)network.TotalHits / ((float)iterations * (float)numSets)) * 100) + "%)");
+
             }
 
-            Console.WriteLine("Done");
-            Console.ReadKey();
+            reader.Dispose();
+        }
+
+        static void TestNetwork(Network network)
+        {
+            MnistReader reader = new MnistReader(
+                labelPath,     // path for labels
+                inputPath);    // path for imgs
+
+            int hits = 0;
+            int iterations = 0;
+            Console.WriteLine();
+
+            while (reader.HasNext())
+            {
+                iterations++;
+
+                CharacterImage input = reader.ReadNext();
+                byte[] dataB = DataTo1D(input.Data);
+                float[] dataF = new float[dataB.Length];
+
+                for (int j = 0; j < dataB.Length; j++)
+                {
+                    dataF[j] = ((float)dataB[j]) / 255f;
+                }
+
+                float[] expected = new float[outputLayer];
+                int value = int.Parse(input.Value);
+                expected[value] = 1f;
+
+                if (network.FeedForward(dataF) == value)
+                {
+                    hits++;
+                }
+
+                Console.Write("\r Hits: " + hits + " / " + iterations);
+            }
+
+            reader.Dispose();
+
+            Console.WriteLine();            
+        }
+
+        static void SaveNetwork(Network network, String savePath)
+        {
+            Console.WriteLine("Saving to " + alterateFile + savePath + " ...");
+
+            NetworkSaver saver = new NetworkSaver(alterateFile + savePath);
+            saver.Save(network);
+            saver.Dispose();
+
+            alterateFile = alterateFile == 1 ? 2 : alterateFile;
         }
 
         static byte[] DataTo1D(byte[,] input)
