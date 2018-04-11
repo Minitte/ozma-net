@@ -7,23 +7,42 @@ namespace console
 {
     class Program
     {
-
+        // safety alternating path name
         static int alterateFile = 1;
+
+        // paths
+        static string inputPath = "caltech101-image-data";
+        static string labelPath = "caltech101-image-data-labels";
+        static string savePath = "digit-net.ozmanet";
+
+        static bool loadExisting = false;
+
+        // layout
+        static int inputLayer = 784;
+        static int outputLayer = 10;
+
+        // learning settings
+        static int numRuns = 1;
+        static int numSets = 10;
+        static int learningIterations = 1000;
 
         static void Main(string[] args)
         {
-            int[] layersettings = { 784, 45, 10 };
-            Network network = new Network(layersettings);
+            int[] layersettings = { inputLayer, 200, outputLayer };
+            Network network = null;
 
-            String savePath = "digit-net.ozmanet";
-            //NetworkLoader loader = new NetworkLoader(savePath);
-            //Network network = loader.Load();
-            //loader.Dispose();
+            if (loadExisting)
+            {
+                NetworkLoader loader = new NetworkLoader(savePath);
+                network = loader.Load();
+                loader.Dispose();
+            }
+            else
+            {
+                network = new Network(layersettings);
+            }
 
-            int numSets = 10;
-            int learningIterations = 60000;
-
-            for (int run = 0; run < 1; run++)
+            for (int run = 0; run < numRuns; run++)
             {
                 Console.WriteLine("----- Run #" + run + "-----");
 
@@ -44,16 +63,16 @@ namespace console
             network.TotalHits = 0;
 
             MnistReader reader = new MnistReader(
-                "../data/digits/training/train-labels.idx1-ubyte",     // path for labels
-                "../data/digits/training/train-images.idx3-ubyte");    // path for imgs
+                labelPath,     // path for labels
+                inputPath);    // path for imgs
 
             int iterations = 0;
 
             while (reader.HasNext() && iterations < learningIterations)
             {
                 iterations++;
-                float[,] inputSet = new float[numSets, 784];
-                float[,] expectedSet = new float[numSets, 10];
+                float[,] inputSet = new float[numSets, inputLayer];
+                float[,] expectedSet = new float[numSets, outputLayer];
 
                 for (int i = 0; i < numSets; i++)
                 {
@@ -86,8 +105,8 @@ namespace console
         static void TestNetwork(Network network)
         {
             MnistReader reader = new MnistReader(
-                    "../data/digits/test/t10k-labels.idx1-ubyte",     // path for labels
-                    "../data/digits/test/t10k-images.idx3-ubyte");    // path for imgs
+                labelPath,     // path for labels
+                inputPath);    // path for imgs
 
             int hits = 0;
             int iterations = 0;
