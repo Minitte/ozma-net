@@ -11,8 +11,8 @@ namespace console
         static int alterateFile = 1;
 
         // paths
-        static string inputPath = "coil-20-proc-1440-128x128-shuffled";
-        static string labelPath = "coil-20-proc-1440-128x128-shuffled-labels";
+        static string inputPath = "coil-20-proc-1440-128x128";
+        static string labelPath = "coil-20-proc-1440-128x128-labels";
         static string savePath = "digit-net.ozmanet";
 
         static bool loadExisting = false;
@@ -23,7 +23,7 @@ namespace console
 
         // learning settings
         static int numRuns = 3;
-        static int numSets = 100;
+        static int numSets = 144;
         static int learningIterations = 1000;
 
         static void Main(string[] args)
@@ -125,7 +125,7 @@ namespace console
                     dataF[j] = ((float)dataB[j]) / 255f;
                 }
 
-                float[] expected = new float[10];
+                float[] expected = new float[outputLayer];
                 int value = int.Parse(input.Value);
                 expected[value] = 1f;
 
