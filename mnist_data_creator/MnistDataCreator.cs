@@ -170,8 +170,12 @@ namespace mnist_data_creator
                 Console.WriteLine();
             }
 
-            Console.WriteLine("Found a total of " + countTotal + " images");
-            Console.WriteLine("Writing images to file...");
+            Console.WriteLine("\nFound a total of " + countTotal + " images");
+
+            Console.WriteLine("\nShuffling list...");
+            Shuffle(imgList);
+
+            Console.WriteLine("\nWriting images to file...");
 
             // begin writing data
             MnistImageWriter imgWriter = new MnistImageWriter(outPath, (uint)imgList.Count, (uint)width, (uint)height);
@@ -183,8 +187,9 @@ namespace mnist_data_creator
             {
                 imgWriter.WriteImage(gimg.Image);
                 labelWriter.WriteLabel(gimg.LabelIndex);
-                Console.Write("\r wrote " + ++writeCount + "out of " + countTotal);
+                Console.Write("\r wrote " + ++writeCount + " out of " + countTotal);
             }
+            Console.WriteLine();
 
             imgWriter.Close();
             labelWriter.Close();
@@ -249,6 +254,20 @@ namespace mnist_data_creator
             }
 
             return destImage;
+        }
+
+        public static void Shuffle(List<GeneralImage> list)
+        {
+            Random rng = new Random();
+            int n = list.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = rng.Next(n + 1);
+                GeneralImage value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
         }
     }
 }
