@@ -88,7 +88,6 @@ namespace mnist_data_creator
                         string outPath = Console.ReadLine();
 
                         FolderToMnist(dirPath, outPath, width, height, max);
-                        WriteMenu();
                         break;
 
                     case 6:
@@ -157,7 +156,7 @@ namespace mnist_data_creator
                     {
                         break;
                     }
-
+                    countTotal++;
                     Console.Write("\rFound " + count + " in " + label + "(" + labelIndex + ")");
 
                     // load and hold
@@ -171,7 +170,7 @@ namespace mnist_data_creator
                 Console.WriteLine();
             }
 
-            Console.WriteLine("Found a total of " + countTotal + "images");
+            Console.WriteLine("Found a total of " + countTotal + " images");
             Console.WriteLine("Writing images to file...");
 
             // begin writing data
