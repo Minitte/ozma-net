@@ -194,9 +194,13 @@ namespace mnist_data_creator
 
             foreach (GeneralImage gimg in imgList)
             {
+                if (++writeCount > amt)
+                {
+                    break;
+                }
                 imgWriter.WriteImage(gimg.Image);
                 labelWriter.WriteLabel(gimg.LabelIndex);
-                Console.Write("\r wrote " + ++writeCount + " out of " + countTotal);
+                Console.Write("\r wrote " + writeCount + " out of " + countTotal);
             }
             Console.WriteLine();
 
