@@ -57,10 +57,11 @@ namespace mnist_data_creator
                             break;
                         }
 
-                        // width, height and max
+                        // width, height, max and amt
                         int width = 0;
                         int height = 0;
                         int max = 0;
+                        int amt = 0;
 
                         Console.WriteLine("\nImage will be resize to fit the width and height..");
                         Console.WriteLine("\nWidth?");
@@ -83,11 +84,18 @@ namespace mnist_data_creator
                             break;
                         }
 
+                        Console.WriteLine("\nMax number of images total? (0 for unlimited)");
+                        if (!int.TryParse(Console.ReadLine(), out amt))
+                        {
+                            Console.WriteLine("Could not read that number!");
+                            break;
+                        }
+
                         // output path
                         Console.WriteLine("\nEnter output path");
                         string outPath = Console.ReadLine();
 
-                        FolderToMnist(dirPath, outPath, width, height, max);
+                        FolderToMnist(dirPath, outPath, width, height, max, amt);
                         break;
 
                     case 6:
@@ -120,7 +128,7 @@ namespace mnist_data_creator
         /// <summary>
         /// reads all images from folder
         /// </summary>
-        static void FolderToMnist(string dirPath, string outPath, int width, int height, int max)
+        static void FolderToMnist(string dirPath, string outPath, int width, int height, int max, int amt)
         {
             // list of all the folders
             string[] folders = Directory.GetDirectories(dirPath);
@@ -190,6 +198,11 @@ namespace mnist_data_creator
                 Console.Write("\r wrote " + ++writeCount + " out of " + countTotal);
             }
             Console.WriteLine();
+
+            if (amt > 0)
+            {
+                Console.WriteLine((countTotal - amt) + " images was skipped due to user defined limit!");
+            }
 
             imgWriter.Close();
             labelWriter.Close();
