@@ -186,8 +186,9 @@ namespace mnist_data_creator
             Console.WriteLine("\nWriting images to file...");
 
             // begin writing data
-            MnistImageWriter imgWriter = new MnistImageWriter(outPath, (uint)imgList.Count, (uint)width, (uint)height);
-            MnistLabelWriter labelWriter = new MnistLabelWriter(outPath + "-labels", (uint)imgList.Count);
+            int numData = amt > 0 ? amt : imgList.Count;
+            MnistImageWriter imgWriter = new MnistImageWriter(outPath, (uint)numData, (uint)width, (uint)height);
+            MnistLabelWriter labelWriter = new MnistLabelWriter(outPath + "-labels", (uint)numData);
 
             int writeCount = 0;
 
