@@ -64,17 +64,20 @@ namespace mnist_data_creator
                         int amt = 0;
 
                         Console.WriteLine("\nImage will be resize to fit the width and height..");
-                        Console.WriteLine("\nWidth?");
+                        Console.WriteLine("\nWidth? (0 to skip resizing)");
                         if (!int.TryParse(Console.ReadLine(), out width)) {
                             Console.WriteLine("Could not read that number!");
                             break;
                         }
 
-                        Console.WriteLine("\nHeight?");
-                        if (!int.TryParse(Console.ReadLine(), out height))
+                        if (width != 0)
                         {
-                            Console.WriteLine("Could not read that number!");
-                            break;
+                            Console.WriteLine("\nHeight?");
+                            if (!int.TryParse(Console.ReadLine(), out height))
+                            {
+                                Console.WriteLine("Could not read that number!");
+                                break;
+                            }
                         }
 
                         Console.WriteLine("\nMax images per folder? (0 for unlimited)");
@@ -160,6 +163,7 @@ namespace mnist_data_creator
                 string label = Path.GetFileName(fullPath);
                 labelList.Add(label);
                 int count = 0;
+                int resizeCount = 0;
 
                 // load all of the images in the folder
                 foreach (string i in imgPath)
@@ -170,10 +174,17 @@ namespace mnist_data_creator
                         break;
                     }
                     countTotal++;
-                    Console.Write("\rFound " + count + " in " + label + "(" + labelIndex + ")");
+                    Console.Write("\rFound " + count + " in " + label + "(" + labelIndex + ") resized=" + resizeCount + " images");
 
                     // load and hold
-                    Image img = ResizeImage(Image.FromFile(i), width, height);
+                    Image img = Image.FromFile(i);
+
+                    if ((width != 0 && height != 0) && (width != img.Width || height != img.Height))
+                    {
+                        img = ResizeImage(img, width, height);
+                        resizeCount++;
+                    }
+
                     Bitmap bmp = new Bitmap(img);
                     byte[,] data = BitmapToByteArr(bmp);
                     //writer.WriteImage(data);
