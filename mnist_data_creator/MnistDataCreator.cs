@@ -15,9 +15,11 @@ namespace mnist_data_creator
     {
         static void Main(string[] args)
         {
-            WriteMenu();
-            while (true)
+            bool running = true;
+            
+            while (running)
             {
+                WriteMenu();
                 string input = Console.ReadLine();
 
                 int choice = -1;
@@ -35,12 +37,13 @@ namespace mnist_data_creator
                     case 1:
                         // input path
                         Console.WriteLine("From " + Directory.GetCurrentDirectory() + "...");
-                        Console.WriteLine("Enter folder path");
+                        Console.WriteLine("Enter input folder path.");
                         string dirPath = Console.ReadLine();
 
                         if (!Directory.Exists(dirPath))
                         {
                             Console.WriteLine("Can't find the folder!");
+                            Console.WriteLine(Directory.GetCurrentDirectory() + "\\" + dirPath);
                             break;
                         }
 
@@ -69,8 +72,19 @@ namespace mnist_data_creator
                         WriteMenu();
                         break;
 
+                    case 6:
+                        Console.WriteLine("Ending...");
+                        running = false;
+                        break;
+
+                    default:
+                        Console.WriteLine("Invalid choice!");
+                        break;
                 }
             }
+
+            Console.WriteLine("Press any key to end...");
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -78,8 +92,10 @@ namespace mnist_data_creator
         /// </summary>
         static void WriteMenu()
         {
+            Console.WriteLine("===============");
             Console.WriteLine("1 - from Folder");
-            Console.WriteLine("9 - exit");
+            Console.WriteLine("6 - exit");
+            Console.WriteLine("===============");
         }
 
         /// <summary>
