@@ -144,6 +144,11 @@ namespace mnist_data_creator
                 max = int.MaxValue - 1;
             }
 
+            if (amt <= 0)
+            {
+                amt = int.MaxValue - 1;
+            }
+
             Console.WriteLine("\nSearching for images...");
 
             foreach (string f in folders)
