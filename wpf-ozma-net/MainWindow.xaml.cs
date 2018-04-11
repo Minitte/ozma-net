@@ -15,9 +15,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Ink;
 
+using Microsoft.Win32;
 using ozmanet.neural_network;
 using ozmanet.util;
-using Microsoft.Win32;
 
 namespace wpf_ozma_net
 {

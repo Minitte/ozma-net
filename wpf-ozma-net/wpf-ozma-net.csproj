@@ -54,6 +54,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="neural-network\CharacterImage.cs" />
+    <Compile Include="neural-network\GeneralImage.cs" />
+    <Compile Include="neural-network\Network.cs" />
+    <Compile Include="neural-network\Neuron.cs" />
+    <Compile Include="neural-network\NeuronLink.cs" />
+    <Compile Include="neural-network\NeuronLinkLayer.cs" />
     <Compile Include="util\MathF.cs" />
     <Compile Include="util\NetworkLoader.cs" />
     <Page Include="MainWindow.xaml">
@@ -70,11 +76,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="neural-network\CharacterImage.cs" />
-    <Compile Include="neural-network\Network.cs" />
-    <Compile Include="neural-network\Neuron.cs" />
-    <Compile Include="neural-network\NeuronLink.cs" />
-    <Compile Include="neural-network\NeuronLinkLayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -99,6 +100,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ozma-net\ozmanet.csproj">
+      <Project>{2A5E8921-05F1-4312-A68A-C68988E8D487}</Project>
+      <Name>ozmanet</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

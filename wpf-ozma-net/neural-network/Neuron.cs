@@ -23,6 +23,8 @@ namespace ozmanet.neural_network
 
         private double delta;
 
+        private double derivativeSum;
+
         public double Net
         {
             get
@@ -52,6 +54,8 @@ namespace ozmanet.neural_network
         public double Bias { get { return bias; } set { bias = value; } }
 
         public double Delta { get { return delta; } set { delta = value; } }
+
+        public double DerivativeSum { get { return derivativeSum; } set { derivativeSum = value; } }
 
         /// <summary>
         /// Default constructor
