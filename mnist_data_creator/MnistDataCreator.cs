@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 
 using System.Drawing;
 using System.IO;
-using ozmanet.util;
-using ozmanet.neural_network;
 
 namespace mnist_data_creator
 {
@@ -57,9 +55,10 @@ namespace mnist_data_creator
                             break;
                         }
 
-                        // width and height
+                        // width, height and max
                         int width = 0;
                         int height = 0;
+                        int max = 0;
 
                         Console.WriteLine("Width?");
                         if (!int.TryParse(Console.ReadLine(), out width)) {
@@ -74,11 +73,18 @@ namespace mnist_data_creator
                             break;
                         }
 
+                        Console.WriteLine("Max images per folder? (0 for unlimited)");
+                        if (!int.TryParse(Console.ReadLine(), out max))
+                        {
+                            Console.WriteLine("Could not read that number!");
+                            break;
+                        }
+
                         // output path
                         Console.WriteLine("Enter output path");
                         string outPath = Console.ReadLine();
 
-                        FolderToMnist(dirPath, outPath, (uint)width, (uint)height);
+                        FolderToMnist(dirPath, outPath, (uint)width, (uint)height, max);
                         WriteMenu();
                         break;
 
@@ -112,29 +118,46 @@ namespace mnist_data_creator
         /// <summary>
         /// reads all images from folder
         /// </summary>
-        static void FolderToMnist(string dirPath, string outPath, uint width, uint height)
+        static void FolderToMnist(string dirPath, string outPath, uint width, uint height, int max)
         {
             // list of all the folders
             string[] folders = Directory.GetDirectories(dirPath);
 
             List<GeneralImage> imgList = new List<GeneralImage>();
+            List<string> labelList = new List<string>();
 
             int countTotal = 0;
-            byte labelIndex = 0; ;
+            byte labelIndex = 0;
+
+            if (max <= 0)
+            {
+                max = int.MaxValue - 1;
+            }
+
+            Console.WriteLine("Searching for images...");
 
             foreach (string f in folders)
             {
                 // list of all of the imgs in the folder
                 string[] imgPath = Directory.GetFiles(f);
 
-                string fullPath = Path.GetFullPath(dirPath).TrimEnd(Path.DirectorySeparatorChar);
+                string fullPath = Path.GetFullPath(f).TrimEnd(Path.DirectorySeparatorChar);
                 string label = Path.GetFileName(fullPath);
+                labelList.Add(label);
                 int count = 0;
 
                 // load all of the images in the folder
                 foreach (string i in imgPath)
                 {
-                    Console.Write("\r Found " + ++count + " in " + label + "(" + labelIndex + ")");
+                    // limit per folder
+                    if (++count > max)
+                    {
+                        break;
+                    }
+
+                    Console.Write("\rFound " + count + " in " + label + "(" + labelIndex + ")");
+
+                    // load and hold
                     Image img = Image.FromFile(i);
                     Bitmap bmp = new Bitmap(img);
                     byte[,] data = BitmapToByteArr(bmp);
@@ -146,6 +169,7 @@ namespace mnist_data_creator
             }
 
             Console.WriteLine("Found a total of " + countTotal + "images");
+            Console.WriteLine("Writing images to file...");
 
             // begin writing data
             MnistImageWriter imgWriter = new MnistImageWriter(outPath, (uint)imgList.Count, width, height);
@@ -162,6 +186,13 @@ namespace mnist_data_creator
 
             imgWriter.Close();
             labelWriter.Close();
+
+            // write label strings for reference
+            StreamWriter txtWriter = new StreamWriter(outPath + "-labels-string.txt");
+            foreach (string l in labelList)
+            {
+                txtWriter.WriteLine(l);
+            }
 
             Console.WriteLine("Done");
         }
