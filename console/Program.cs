@@ -11,15 +11,15 @@ namespace console
         static int alterateFile = 1;
 
         // paths
-        static string inputPath = "caltech101-img-data-100x67-9000-shuffled";
-        static string labelPath = "caltech101-img-data-100x67-9000-shuffled-labels";
+        static string inputPath = "coil-20-proc-1440-128x128-shuffled";
+        static string labelPath = "coil-20-proc-1440-128x128-shuffled-labels";
         static string savePath = "digit-net.ozmanet";
 
         static bool loadExisting = false;
 
         // layout
-        static int inputLayer = 100 * 67;
-        static int outputLayer = 102;
+        static int inputLayer = 128*128;
+        static int outputLayer = 20;
 
         // learning settings
         static int numRuns = 3;
@@ -28,7 +28,7 @@ namespace console
 
         static void Main(string[] args)
         {
-            int[] layersettings = { inputLayer, 50, outputLayer };
+            int[] layersettings = { inputLayer, 65, outputLayer };
             Network network = null;
 
             if (loadExisting)
