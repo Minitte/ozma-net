@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using System.Drawing;
 using System.IO;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 
 namespace mnist_data_creator
 {
@@ -60,6 +62,7 @@ namespace mnist_data_creator
                         int height = 0;
                         int max = 0;
 
+                        Console.WriteLine("Image will be resize to fit the width and height..");
                         Console.WriteLine("Width?");
                         if (!int.TryParse(Console.ReadLine(), out width)) {
                             Console.WriteLine("Could not read that number!");
@@ -84,7 +87,7 @@ namespace mnist_data_creator
                         Console.WriteLine("Enter output path");
                         string outPath = Console.ReadLine();
 
-                        FolderToMnist(dirPath, outPath, (uint)width, (uint)height, max);
+                        FolderToMnist(dirPath, outPath, width, height, max);
                         WriteMenu();
                         break;
 
@@ -118,7 +121,7 @@ namespace mnist_data_creator
         /// <summary>
         /// reads all images from folder
         /// </summary>
-        static void FolderToMnist(string dirPath, string outPath, uint width, uint height, int max)
+        static void FolderToMnist(string dirPath, string outPath, int width, int height, int max)
         {
             // list of all the folders
             string[] folders = Directory.GetDirectories(dirPath);
@@ -158,7 +161,7 @@ namespace mnist_data_creator
                     Console.Write("\rFound " + count + " in " + label + "(" + labelIndex + ")");
 
                     // load and hold
-                    Image img = Image.FromFile(i);
+                    Image img = ResizeImage(Image.FromFile(i), width, height);
                     Bitmap bmp = new Bitmap(img);
                     byte[,] data = BitmapToByteArr(bmp);
                     //writer.WriteImage(data);
@@ -172,7 +175,7 @@ namespace mnist_data_creator
             Console.WriteLine("Writing images to file...");
 
             // begin writing data
-            MnistImageWriter imgWriter = new MnistImageWriter(outPath, (uint)imgList.Count, width, height);
+            MnistImageWriter imgWriter = new MnistImageWriter(outPath, (uint)imgList.Count, (uint)width, (uint)height);
             MnistLabelWriter labelWriter = new MnistLabelWriter(outPath + "-labels", (uint)imgList.Count);
 
             int writeCount = 0;
@@ -214,6 +217,38 @@ namespace mnist_data_creator
             }
 
             return data;
+        }
+
+        /// <summary>
+        /// Resize the image to the specified width and height.
+        /// </summary>
+        /// <param name="image">The image to resize.</param>
+        /// <param name="width">The width to resize to.</param>
+        /// <param name="height">The height to resize to.</param>
+        /// <returns>The resized image.</returns>
+        public static Bitmap ResizeImage(Image image, int width, int height)
+        {
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
         }
     }
 }
