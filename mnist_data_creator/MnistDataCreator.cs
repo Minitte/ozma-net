@@ -282,7 +282,7 @@ namespace mnist_data_creator
                 {
                     byte b = br.ReadByte();
                     
-                    img[x, y] = 0xff + (b << 16) + (b << 8) + (b);
+                    img[x, y] = (0x000000ff << 24) + (b << 16) + (b << 8) + (b);
 
                     Color c = Color.FromArgb(img[x, y]);
                     bmp.SetPixel(x, y, c);
@@ -293,6 +293,11 @@ namespace mnist_data_creator
 
             br.Close();
             fs.Close();
+        }
+
+        static void TestReadImage(string path)
+        {
+
         }
 
         static byte[,] BitmapToByteArr(Bitmap img)
