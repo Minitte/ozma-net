@@ -195,6 +195,7 @@ namespace mnist_data_creator
             {
                 txtWriter.WriteLine(l);
             }
+            txtWriter.Close();
 
             Console.WriteLine("Done");
         }
