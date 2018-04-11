@@ -6,7 +6,7 @@ using System.IO;
 
 namespace ozmanet.util
 {
-    class MnistImageWriter
+    public class MnistImageWriter
     {
         /// <summary>
         /// Path for the file
@@ -19,11 +19,6 @@ namespace ozmanet.util
         private BinaryWriter m_out;
 
         /// <summary>
-        /// list of image data
-        /// </summary>
-        private List<byte[,]> m_data;
-
-        /// <summary>
         /// image width
         /// </summary>
         private uint m_width;
@@ -34,19 +29,24 @@ namespace ozmanet.util
         private uint m_height;
 
         /// <summary>
+        /// count of images
+        /// </summary>
+        private uint m_count;
+
+        /// <summary>
         /// output stream
         /// </summary>
         private FileStream m_stream;
 
-        public MnistImageWriter(string path, uint width, uint height)
+        public MnistImageWriter(string path, uint count, uint width, uint height)
         {
             m_path = path;
             m_width = width;
             m_height = height;
+            m_count = count;
 
             m_stream = new FileStream(m_path, FileMode.OpenOrCreate);
             m_out = new BinaryWriter(m_stream);
-            m_data = new List<byte[,]>();
 
             WriteHeader();
         }
@@ -57,7 +57,14 @@ namespace ozmanet.util
         /// <param name="imgs"></param>
         public void WriteImage(byte[,] img)
         {
-            m_data.Add(img);
+            // read img data
+            for (int x = 0; x < m_width; x++)
+            {
+                for (int y = 0; y < m_height; y++)
+                {
+                    m_out.Write(img[x, y]);
+                }
+            }
         }
 
         /// <summary>
@@ -68,7 +75,7 @@ namespace ozmanet.util
         {
             foreach (byte[,] i in imgs) 
             {
-                m_data.Add(i);
+                WriteImage(i);
             }
         }
 
@@ -80,7 +87,7 @@ namespace ozmanet.util
         {
             foreach (byte[,] i in imgs)
             {
-                m_data.Add(i);
+                WriteImage(i);
             }
         }
 
@@ -93,6 +100,7 @@ namespace ozmanet.util
             m_out.Write((int)0);
 
             // num img
+            m_out.Write(SwapEndianness(m_count));
 
             // width
             m_out.Write(SwapEndianness(m_width));
